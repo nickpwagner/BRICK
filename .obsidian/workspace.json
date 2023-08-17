@@ -1,0 +1,207 @@
+{
+  "main": {
+    "id": "8be7f17c517537b3",
+    "type": "split",
+    "children": [
+      {
+        "id": "ead46c56fc9a290d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "07d36b1e4eccff61",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Python.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "89ebe6c5b2b2713b",
+    "type": "split",
+    "children": [
+      {
+        "id": "f78d0ae2b9ef3644",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "0ed8afeb06c4f309",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "036ba14abf1c1013",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "cacf683ea5baf1b3",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          },
+          {
+            "id": "df8ae73478acbcd1",
+            "type": "leaf",
+            "state": {
+              "type": "tagfolder-view",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "4c58a34c6eb5229b",
+    "type": "split",
+    "children": [
+      {
+        "id": "a4ff7e38cffa9d7f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "95b33c9119ea22d9",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Python.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "c7f4b7aa1eca7cfc",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Python.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "b62ea1955dfb3818",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "d00db72118777a32",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Python.md"
+              }
+            }
+          },
+          {
+            "id": "9d401e2dac32eead",
+            "type": "leaf",
+            "state": {
+              "type": "advanced-tables-toolbar",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "daily-notes:Open today's daily note": false,
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "table-editor-obsidian:Advanced Tables Toolbar": false
+    }
+  },
+  "active": "07d36b1e4eccff61",
+  "lastOpenFiles": [
+    "__INDEX__.md",
+    "Templates/otemplate.md",
+    "Journal/2023-08-17.md",
+    "Programming.md",
+    "Python.md",
+    "Markdown.md",
+    "Journal/2023-08-18.md",
+    "Links.md",
+    "Tags/🗺️.md",
+    "Tags/❗.md",
+    "Tags/🌳.md",
+    "Tags/🌱.md",
+    "Tags/🌞.md",
+    "LaTeX.md",
+    "Conda Setup.md",
+    "Templates/default.md",
+    "venv.md",
+    "Title of my New Note.md",
+    "Journal/Untitled.md",
+    "Journal/Untitled 1.md",
+    "Tags",
+    "2023-08-17.md",
+    "🌳 Released.md",
+    "Templates/t1.md",
+    "Templates/Inputs/New.md",
+    "Templates/mdnotes/Zotero Metadata Template.md",
+    "Templates/mdnotes/Zotero Note Template.md",
+    "Templates/Temporal",
+    "Templates/mdnotes",
+    "Templates/Inputs",
+    "Templates/Formatting/Mermaid",
+    "Templates/Formatting/LaTeX",
+    "Templates/Formatting/Code",
+    "Templates/Formatting",
+    "Templates/Anki",
+    "Templates",
+    "Media/Pasted image 20230817210851.png",
+    "Media/image.png",
+    "image.png"
+  ]
+}
