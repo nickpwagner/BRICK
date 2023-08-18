@@ -1,4 +1,6 @@
 # INDEX
+> “We must all suffer from one of two pains: the pain of discipline or the pain of regret." - Jim Rohn
+
 
 | Tags | Meaning          |
 | ---- | ---------------- |
@@ -9,3 +11,4 @@
 | #❗  | Important        |
 
 # [[Programming]]
+# [[Sports]]

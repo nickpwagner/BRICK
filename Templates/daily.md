@@ -11,17 +11,15 @@ ___
 ## Sleep / Mood
 ...
 ## Goals
-1. 
-2. 
-3. 
+- [ ]
+- [ ]
 ___
 # Evening Routing
 ## Highlights
 1. 
 2. 
-3. 
 ## Habits 
 - [ ] Sport
 - [ ] Study
-- [ ] Guitar
+- [ ] Music
   

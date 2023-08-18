@@ -1,6 +1,7 @@
 ___
+# Title
+Links: [[]]
 Status: #🌱 
 Tags: [[]]
-Links: [[]]
 <!--- Created on: {{date}}, {{time}} --->
 ___

@@ -1,8 +1,8 @@
 ___
-# DAILY 2023-08-18
-Links: [[2023-08-17]] [[2023-08-19]]
+# DAILY {{date:YYYY-MM-DD}}
+Links: [[{{date:YYYY-MM-}}]] [[{{date:YYYY-MM-}}]]
 Tags: [[daily]]
-<!--- Created on: 2023-08-18, 01:53 --->
+<!--- Created on: {{date}}, {{time}} --->
 ___
 # General
 ...
@@ -11,17 +11,15 @@ ___
 ## Sleep / Mood
 ...
 ## Goals
-1. 
-2. 
-3. 
+- [ ]
+- [ ]
 ___
 # Evening Routing
 ## Highlights
 1. 
 2. 
-3. 
 ## Habits 
 - [ ] Sport
 - [ ] Study
-- [ ] Guitar
+- [ ] Music
   
