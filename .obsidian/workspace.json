@@ -1,23 +1,69 @@
 {
   "main": {
-    "id": "8be7f17c517537b3",
+    "id": "fdbeebf3246a7836",
     "type": "split",
     "children": [
       {
-        "id": "8a1ad9616de4bb60",
+        "id": "599557e9ea35dd02",
         "type": "tabs",
+        "dimension": 81.49448345035105,
         "children": [
           {
-            "id": "fea8012df49fc843",
+            "id": "09717f25e8ce7c94",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Journal/2023-08-18 3.md",
-                "mode": "source",
+                "file": "__INDEX__.md",
+                "mode": "preview",
+                "backlinks": false,
                 "source": false
               }
-            }
+            },
+            "group": "143ef76ec2038ca7"
+          }
+        ]
+      },
+      {
+        "id": "14c9c44ee1e6841a",
+        "type": "tabs",
+        "dimension": 18.50551654964895,
+        "children": [
+          {
+            "id": "8be2faac2e8cbc8c",
+            "type": "leaf",
+            "state": {
+              "type": "localgraph",
+              "state": {
+                "file": "__INDEX__.md",
+                "options": {
+                  "collapse-filter": true,
+                  "search": "",
+                  "localJumps": 1,
+                  "localBacklinks": true,
+                  "localForelinks": true,
+                  "localInterlinks": false,
+                  "showTags": false,
+                  "showAttachments": false,
+                  "hideUnresolved": false,
+                  "collapse-color-groups": true,
+                  "colorGroups": [],
+                  "collapse-display": true,
+                  "showArrow": false,
+                  "textFadeMultiplier": 0,
+                  "nodeSizeMultiplier": 1,
+                  "lineSizeMultiplier": 1,
+                  "collapse-forces": true,
+                  "centerStrength": 0.518713248970312,
+                  "repelStrength": 10,
+                  "linkStrength": 1,
+                  "linkDistance": 250,
+                  "scale": 1,
+                  "close": true
+                }
+              }
+            },
+            "group": "143ef76ec2038ca7"
           }
         ]
       }
@@ -25,15 +71,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "89ebe6c5b2b2713b",
+    "id": "1fe258d99893191d",
     "type": "split",
     "children": [
       {
-        "id": "f78d0ae2b9ef3644",
+        "id": "410081af487c0819",
         "type": "tabs",
         "children": [
           {
-            "id": "0ed8afeb06c4f309",
+            "id": "9815ad9f1692058d",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -43,12 +89,12 @@
             }
           },
           {
-            "id": "036ba14abf1c1013",
+            "id": "1f53f54c5c81cb19",
             "type": "leaf",
             "state": {
               "type": "search",
               "state": {
-                "query": "tag:#Journal/Weekly-overview",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -58,7 +104,7 @@
             }
           },
           {
-            "id": "cacf683ea5baf1b3",
+            "id": "d10ec532d0b35160",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -66,7 +112,7 @@
             }
           },
           {
-            "id": "df8ae73478acbcd1",
+            "id": "eb1e8be556a81174",
             "type": "leaf",
             "state": {
               "type": "tagfolder-view",
@@ -80,22 +126,22 @@
     "width": 300
   },
   "right": {
-    "id": "4c58a34c6eb5229b",
+    "id": "006937ef39e8e911",
     "type": "split",
     "children": [
       {
-        "id": "a4ff7e38cffa9d7f",
+        "id": "5498363dd17ec6ab",
         "type": "tabs",
         "children": [
           {
-            "id": "95b33c9119ea22d9",
+            "id": "a3eb77c6a4089e33",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Journal/2023-08-18 3.md",
-                "collapseAll": false,
-                "extraContext": false,
+                "file": "__INDEX__.md",
+                "collapseAll": true,
+                "extraContext": true,
                 "sortOrder": "alphabetical",
                 "showSearch": false,
                 "searchQuery": "",
@@ -105,19 +151,19 @@
             }
           },
           {
-            "id": "c7f4b7aa1eca7cfc",
+            "id": "35cea6526016bbcb",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Journal/2023-08-18 3.md",
+                "file": "__INDEX__.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
             }
           },
           {
-            "id": "b62ea1955dfb3818",
+            "id": "567afbebf283795b",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -128,21 +174,13 @@
             }
           },
           {
-            "id": "d00db72118777a32",
+            "id": "537ce6ee6d21d6cc",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
-                "file": "Journal/2023-08-18 3.md"
+                "file": "__INDEX__.md"
               }
-            }
-          },
-          {
-            "id": "9d401e2dac32eead",
-            "type": "leaf",
-            "state": {
-              "type": "advanced-tables-toolbar",
-              "state": {}
             }
           }
         ]
@@ -157,51 +195,28 @@
       "daily-notes:Open today's daily note": false,
       "switcher:Open quick switcher": false,
       "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
       "templates:Insert template": false,
       "command-palette:Open command palette": false,
+      "obsidian-omnivore:Omnivore": false,
+      "obsidian-excalidraw-plugin:Create new drawing": false,
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "fea8012df49fc843",
+  "active": "8be2faac2e8cbc8c",
   "lastOpenFiles": [
-    "Journal/2023-08-17.md",
     "Journal/2023-08-18.md",
-    "Journal/2023-08-18 3.md",
-    "Journal/2023-08-18 2.md",
-    "Markdown.md",
     "__INDEX__.md",
-    "Programming.md",
+    "Markdown.md",
+    "Conda.md",
+    "Sports.md",
     "Python.md",
-    "Journal/Weekly/CW 2023-33.md",
-    "Templates/weekly.md",
-    "Journal/Weekly/CW 2023-34.md",
+    "Programming.md",
+    "Mobility.md",
+    "Linux.md",
     "Templates/default_obsidian.md",
-    "Templates/daily.md",
-    "Templates/Untitled.md",
-    "Journal/2023.08.18.md",
-    "2023-08-18.md",
-    "Journal/Weekly/weekly_note.md",
-    "Journal/Weekly/Untitled 1.md",
-    "Journal/Weekly",
-    "Untitled.md",
-    "CW ….md",
-    "Links.md",
-    "Tags/🗺️.md",
-    "Tags/❗.md",
-    "Tags/🌳.md",
-    "Tags/🌱.md",
-    "Tags/🌞.md",
-    "Tags",
-    "Templates/Temporal",
-    "Templates/mdnotes",
-    "Templates/Inputs",
-    "Templates/Formatting/Mermaid",
-    "Templates/Formatting/LaTeX",
-    "Templates/Formatting/Code",
-    "Templates/Formatting",
-    "Templates/Anki",
-    "Media/Pasted image 20230817210851.png",
-    "Media/image.png",
-    "image.png"
+    "Templates/weekly.md",
+    "Journal/2023-08-22.md",
+    "Templates/daily.md"
   ]
 }

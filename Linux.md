@@ -2,7 +2,7 @@ ___
 # LINUX
 Links: [[Operating Systems]]
 Status: #🌞
-Tags: []
+Tags: [[]]
 <!--- Created on: 2023.08.19, 18:49 --->
 ___
 

@@ -1,11 +1,9 @@
-___
 # CONDA
 Links: [[Python]]
 Status: #🌞
 Tags: [[Windows]] [[Linux]]
 <!--- Created on: 2023.08.19, 18:49 --->
-___
-##[[tldr]]:
+
 - open-source package and environment management system
 - installs, manages, and organizes software packages and their dependencies
 - unlike [[pip]], Conda is not limited to Python packages and can manage software written in various languages

@@ -1,7 +1,7 @@
 ___
 # MARKDOWN
 Links: [[Programming]]
-Status: #🗺️ 
+Status: #🌳 
 Tags: [[]]
 <!--- Created on: 2023.08.18, 00:14 --->
 ___

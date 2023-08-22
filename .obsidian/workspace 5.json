@@ -1,0 +1,201 @@
+{
+  "main": {
+    "id": "8be7f17c517537b3",
+    "type": "split",
+    "children": [
+      {
+        "id": "8a1ad9616de4bb60",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "fea8012df49fc843",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "89ebe6c5b2b2713b",
+    "type": "split",
+    "children": [
+      {
+        "id": "f78d0ae2b9ef3644",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "0ed8afeb06c4f309",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "036ba14abf1c1013",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "tag:#Journal/Weekly-overview",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "cacf683ea5baf1b3",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          },
+          {
+            "id": "df8ae73478acbcd1",
+            "type": "leaf",
+            "state": {
+              "type": "tagfolder-view",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "4c58a34c6eb5229b",
+    "type": "split",
+    "children": [
+      {
+        "id": "a4ff7e38cffa9d7f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "95b33c9119ea22d9",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "c7f4b7aa1eca7cfc",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "b62ea1955dfb3818",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "d00db72118777a32",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {}
+            }
+          },
+          {
+            "id": "9d401e2dac32eead",
+            "type": "leaf",
+            "state": {
+              "type": "advanced-tables-toolbar",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "daily-notes:Open today's daily note": false,
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "table-editor-obsidian:Advanced Tables Toolbar": false
+    }
+  },
+  "active": "fea8012df49fc843",
+  "lastOpenFiles": [
+    "Python.md",
+    "Conda.md",
+    "Conda 3.md",
+    "__INDEX__ 2.md",
+    "Python 2.md",
+    "Journal/2023-08-18 2.md",
+    "Programming 2.md",
+    "Templates/daily 2.md",
+    "__INDEX__.md",
+    "Templates/weekly.md",
+    "Templates/default_obsidian.md",
+    "Templates/daily.md",
+    "Templates",
+    "Sports.md",
+    "Programming.md",
+    "Mobility.md",
+    "Media/Pasted image 20230817210851.png",
+    "Media",
+    "Markdown.md",
+    "Linux.md",
+    "Journal/Weekly/CW 2023-34.md",
+    "Journal/Weekly/CW 2023-33.md",
+    "Journal/Weekly",
+    "Journal/2023-08-18.md",
+    "Journal/2023-08-17.md",
+    "Journal",
+    "Conda(1).md",
+    "Mobility 2.md",
+    "Linux 2.md",
+    "Conda 2.md",
+    "Media/AttentionIsAllYouNeed.pdf",
+    "Media/Pasted image 20230821002554.png",
+    "Media/Pasted image 20230821002436.png",
+    "Excalidraw/Drawing 2023-08-21 03.30.57.excalidraw.md",
+    "(1).gitignore",
+    "Media/---.txt",
+    "Media/2023-08-20",
+    "Media/2023-08-21",
+    "Excalidraw",
+    "Media/image.png",
+    "image.png"
+  ]
+}

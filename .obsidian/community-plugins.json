@@ -1,9 +1,9 @@
 [
-  "table-editor-obsidian",
-  "obsidian-icon-folder",
-  "obsidian-languagetool-plugin",
-  "emoji-shortcodes",
+  "obsidian-omnivore",
+  "dataview",
+  "settings-search",
   "obsidian-tagfolder",
-  "obsidian-minimal-settings",
-  "obsidian-style-settings"
+  "table-editor-obsidian",
+  "cm-editor-syntax-highlight-obsidian",
+  "url-into-selection"
 ]
