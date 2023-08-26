@@ -1,4 +1,6 @@
 {
   "accentColor": "",
-  "cssTheme": "Shimmering Focus"
+  "cssTheme": "Shimmering Focus",
+  "baseFontSize": 12,
+  "theme": "system"
 }

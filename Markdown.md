@@ -23,7 +23,9 @@ ___
 
 ==Highlights==
 
-```Coding Blocks```
+`Inline Coding Block`
+
+``` Standard Coding Blocks```
 
 > Quotes/ Blockquotes
 
