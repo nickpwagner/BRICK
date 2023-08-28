@@ -10,3 +10,5 @@ ___
 
 
 [[conda]]
+[[pip]]
+[[Python String Formatting]]

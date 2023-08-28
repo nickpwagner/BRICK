@@ -14,42 +14,6 @@
       "key": "F12"
     }
   ],
-  "table-editor-obsidian:move-column-left": [
-    {
-      "modifiers": [
-        "Mod",
-        "Shift"
-      ],
-      "key": "ArrowLeft"
-    }
-  ],
-  "table-editor-obsidian:move-column-right": [
-    {
-      "modifiers": [
-        "Mod",
-        "Shift"
-      ],
-      "key": "ArrowRight"
-    }
-  ],
-  "table-editor-obsidian:move-row-down": [
-    {
-      "modifiers": [
-        "Mod",
-        "Shift"
-      ],
-      "key": "ArrowDown"
-    }
-  ],
-  "table-editor-obsidian:move-row-up": [
-    {
-      "modifiers": [
-        "Mod",
-        "Shift"
-      ],
-      "key": "ArrowUp"
-    }
-  ],
   "table-editor-obsidian:format-table": [
     {
       "modifiers": [
@@ -93,6 +57,42 @@
         "Shift"
       ],
       "key": "R"
+    }
+  ],
+  "table-editor-obsidian:move-row-down": [
+    {
+      "modifiers": [
+        "Alt",
+        "Shift"
+      ],
+      "key": "ArrowDown"
+    }
+  ],
+  "table-editor-obsidian:move-row-up": [
+    {
+      "modifiers": [
+        "Alt",
+        "Shift"
+      ],
+      "key": "ArrowUp"
+    }
+  ],
+  "table-editor-obsidian:move-column-right": [
+    {
+      "modifiers": [
+        "Alt",
+        "Shift"
+      ],
+      "key": "ArrowLeft"
+    }
+  ],
+  "table-editor-obsidian:move-column-left": [
+    {
+      "modifiers": [
+        "Alt",
+        "Shift"
+      ],
+      "key": "ArrowRight"
     }
   ]
 }

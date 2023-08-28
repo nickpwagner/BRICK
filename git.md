@@ -1,7 +1,7 @@
 ___
 # GIT
 Links: [[Programming]]
-Status: #🌞 
+Status: #🌳 
 Tags: [[Python]] [[Version Control]] [[Markdown]]
 <!--- Created on: 2023.08.26, 14:37 --->
 

@@ -4,19 +4,19 @@
     "type": "split",
     "children": [
       {
-        "id": "70acf0e9dbd2981b",
+        "id": "951487be47738ed5",
         "type": "tabs",
         "children": [
           {
-            "id": "b0e00144a5731392",
+            "id": "6794af9df0beab66",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "git.md",
-                "mode": "preview",
+                "file": "__INDEX__.md",
+                "mode": "source",
                 "backlinks": false,
-                "source": true
+                "source": false
               }
             }
           }
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "git.md",
+                "file": "__INDEX__.md",
                 "collapseAll": true,
                 "extraContext": true,
                 "sortOrder": "alphabetical",
@@ -111,7 +111,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "git.md",
+                "file": "__INDEX__.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -134,7 +134,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "git.md"
+                "file": "__INDEX__.md"
               }
             }
           },
@@ -159,10 +159,10 @@
             "state": {
               "type": "localgraph",
               "state": {
-                "file": "git.md",
+                "file": "__INDEX__.md",
                 "options": {
                   "collapse-filter": false,
-                  "search": "tag:#🗺️",
+                  "search": "",
                   "localJumps": 1,
                   "localBacklinks": true,
                   "localForelinks": true,
@@ -192,7 +192,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 419.5
+    "width": 200
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -207,28 +207,34 @@
       "janitor:Janitor: scan vault": false
     }
   },
-  "active": "b0e00144a5731392",
+  "active": "6794af9df0beab66",
   "lastOpenFiles": [
-    "Programming.md",
-    "Python.md",
-    "__INDEX__.md",
-    "git.md",
-    "pip.md",
-    "conda.md",
-    "Linux.md",
-    "Markdown.md",
-    "Mobility.md",
-    "Journal/2023-08-26.md",
-    "Untitled.md",
+    "Transformer.md",
     "Sports.md",
+    "Self-Attention.md",
     "Python String Formatting.md",
-    "Journal/2023-08-26 2.md",
-    "Journal/2023-08-26 1.md",
-    "ChatGPT Return Markdown only.md",
+    "Python.md",
+    "Prompt-Engineering.md",
+    "Programming.md",
+    "pip.md",
+    "Mobility.md",
+    "Markdown.md",
+    "Linux.md",
+    "git.md",
+    "DETR.md",
+    "conda.md",
+    "ChatGPT.md",
+    "__INDEX__.md",
+    "byobu.md",
+    "C++.md",
+    "Journal/2023-08-28.md",
     "Journal/2023-08-18.md",
-    "Templates/default_obsidian.md",
-    "Templates/weekly.md",
+    "Journal/Weekly/CW 2023-33.md",
+    "Journal/Weekly/CW 2023-34.md",
     "Journal/2023-08-22.md",
-    "Templates/daily.md"
+    "Journal/2023-08-26.md",
+    "DETR - End-to-End Object Detection with Transformers 1.md",
+    "Media/Pasted image 20230817210851.png",
+    "Journal/2023-08-26 2.md"
   ]
 }
