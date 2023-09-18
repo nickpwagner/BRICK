@@ -7,19 +7,18 @@ Tags: [[]]
 <!--- Created on: 2023.08.17, 23:56 --->
 ___
 
-# [[Languages]]
-## Coding
-### [[Python]]
-### [[C++]]
+**[[Projects]]**
+	[[World of ML]]
 
-## Documentation
-### [[Markdown]]
-### [[LaTeX]]
+**Languages**
+	[[Python]]
+	[[C++]]
+	[[Markdown]]
+	[[LaTeX]]
 
+**[[Operating Systems]]**
+	[[Windows]]
+	[[Linux]]
 
-# [[Operating Systems]]
-## [[Windows]]
-## [[Linux]]
-
-# Tools
-## [[git]]
+**[[Tooling]]**
+	[[git]]

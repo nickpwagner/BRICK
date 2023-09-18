@@ -5,5 +5,10 @@
   "obsidian-tagfolder",
   "table-editor-obsidian",
   "obsidian-jupyter",
-  "janitor"
+  "janitor",
+  "mousewheel-image-zoom",
+  "obsidian-zotero-desktop-connector",
+  "obsidian-citation-plugin",
+  "obsidian-style-settings",
+  "obsidian-list-callouts"
 ]

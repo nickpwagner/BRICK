@@ -64,7 +64,19 @@ var DEFAULT_SETTINGS = {
   archiveTags: "",
   disableNarrowingDown: false,
   expandUntaggedToRoot: false,
-  disableDragging: false
+  disableDragging: false,
+  linkConfig: {
+    incoming: {
+      enabled: true,
+      key: ""
+    },
+    outgoing: {
+      enabled: true,
+      key: ""
+    }
+  },
+  linkShowOnlyFDR: true,
+  linkCombineOtherTree: true
 };
 var VIEW_TYPE_SCROLL = "tagfolder-view-scroll";
 var EPOCH_MINUTE = 60;
@@ -85,6 +97,7 @@ var tagDispDict = {
   _VIRTUAL_TAG_CANVAS: "\u{1F4CB} Canvas"
 };
 var VIEW_TYPE_TAGFOLDER = "tagfolder-view";
+var VIEW_TYPE_TAGFOLDER_LINK = "tagfolder-link-view";
 var VIEW_TYPE_TAGFOLDER_LIST = "tagfolder-view-list";
 var OrderKeyTag = {
   NAME: "Tag name",
@@ -1038,6 +1051,8 @@ var tagInfo = writable({});
 var tagFolderSetting = writable(DEFAULT_SETTINGS);
 var selectedTags = writable();
 var allViewItems = writable();
+var allViewItemsByLink = writable();
+var appliedFiles = writable();
 var v2expandedTags = writable(/* @__PURE__ */ new Set());
 var performHide = writable(0);
 
@@ -1085,7 +1100,7 @@ tagInfo.subscribe((tagInfo2) => {
   }
   const items = Object.entries(tagInfo2);
   for (const [key, info] of items) {
-    if ("alt" in info) {
+    if (info == null ? void 0 : info.alt) {
       tagDispAlternativeDict[key] = info.alt;
     }
   }
@@ -1154,7 +1169,7 @@ var doEvents = () => {
 };
 var compare = Intl && Intl.Collator ? new Intl.Collator().compare : (x, y) => `${x != null ? x : ""}`.localeCompare(`${y != null ? y : ""}`);
 function getTagName(tagName, subtreePrefix, tagInfo2, invert) {
-  if (tagInfo2 == null)
+  if (tagInfo2 == void 0)
     return tagName;
   const prefix = invert == -1 ? `\uFFFF` : ``;
   const unpinned = invert == 1 ? `\uFFFF` : ``;
@@ -1228,7 +1243,7 @@ function selectCompareMethodTags(settings, tagInfo2) {
     const bName = b[V2FI_IDX_TAGNAME];
     const aPrefix = isASubTree ? subTreeChar[invert] : "";
     const bPrefix = isBSubTree ? subTreeChar[invert] : "";
-    return compare(getTagName(aName, aPrefix, settings.useTagInfo ? _tagInfo : null, invert), getTagName(bName, bPrefix, settings.useTagInfo ? _tagInfo : null, invert)) * invert;
+    return compare(getTagName(aName, aPrefix, settings.useTagInfo ? _tagInfo : void 0, invert), getTagName(bName, bPrefix, settings.useTagInfo ? _tagInfo : void 0, invert)) * invert;
   };
   switch (settings.sortTypeTag) {
     case "ITEMS_ASC":
@@ -1336,6 +1351,54 @@ function parseTagName(thisName, _tagInfo) {
   if (inSubTree)
     tagNameDisp = [`${tagMark}`, `${renderSpecialTag(tagName)}`];
   return [tagName, tagNameDisp];
+}
+function parseAllForwardReference(metaCache, filename, passed) {
+  var _a;
+  const allForwardLinks = Object.keys((_a = metaCache == null ? void 0 : metaCache[filename]) != null ? _a : {}).filter((e) => !passed.contains(e));
+  const ret = unique(allForwardLinks);
+  return ret;
+}
+function parseAllReverseReference(metaCache, filename, passed) {
+  const allReverseLinks = Object.entries(metaCache).filter(([, links]) => filename in links).map(([name]) => name).filter((e) => !passed.contains(e));
+  const ret = unique(allReverseLinks);
+  return ret;
+}
+function parseAllReference(metaCache, filename, conf) {
+  var _a, _b;
+  const allForwardLinks = !((_a = conf == null ? void 0 : conf.outgoing) == null ? void 0 : _a.enabled) ? [] : parseAllForwardReference(metaCache, filename, []);
+  const allReverseLinks = !((_b = conf == null ? void 0 : conf.incoming) == null ? void 0 : _b.enabled) ? [] : parseAllReverseReference(metaCache, filename, []);
+  let linked = [...allForwardLinks, ...allReverseLinks];
+  if (linked.length != 0)
+    linked = unique([filename, ...linked]);
+  return linked;
+}
+function fileCacheToCompare(cache) {
+  if (!cache)
+    return "";
+  return { l: cache.links, t: cache.tags };
+}
+var allViewItemsMap = /* @__PURE__ */ new Map();
+allViewItemsByLink.subscribe((e) => {
+  updateItemsLinkMap(e);
+});
+function updateItemsLinkMap(e) {
+  allViewItemsMap.clear();
+  if (e)
+    e.forEach((item) => allViewItemsMap.set(item.path, item));
+}
+function getViewItemFromPath(path) {
+  return allViewItemsMap.get(path);
+}
+function getAllLinksRecursive(item, trail) {
+  const allLinks = item.links;
+  const leftLinks = allLinks.filter((e) => !trail.contains(e));
+  const allChildLinks = leftLinks.flatMap((itemName) => {
+    const item2 = getViewItemFromPath(itemName);
+    if (!item2)
+      return [];
+    return getAllLinksRecursive(item2, [...trail, itemName]);
+  });
+  return unique([...leftLinks, ...allChildLinks]);
 }
 
 // ScrollView.ts
@@ -2072,7 +2135,7 @@ function create_default_slot(ctx) {
   let div0;
   let t0_value = (
     /*isVisible*/
-    (ctx[19] ? (
+    (ctx[20] ? (
       /*item*/
       ctx[0].displayName
     ) : "") + ""
@@ -2084,7 +2147,7 @@ function create_default_slot(ctx) {
   let dispose;
   let if_block = (
     /*isVisible*/
-    ctx[19] && create_if_block(ctx)
+    ctx[20] && create_if_block(ctx)
   );
   return {
     c() {
@@ -2130,20 +2193,20 @@ function create_default_slot(ctx) {
             div1,
             "click",
             /*click_handler*/
-            ctx[13]
+            ctx[14]
           ),
           listen(
             div1,
             "mouseover",
             /*mouseover_handler*/
-            ctx[14]
+            ctx[15]
           ),
           listen(div1, "focus", focus_handler),
           listen(
             div1,
             "contextmenu",
             /*contextmenu_handler*/
-            ctx[15]
+            ctx[16]
           )
         ];
         mounted = true;
@@ -2151,15 +2214,15 @@ function create_default_slot(ctx) {
     },
     p(ctx2, dirty) {
       if (dirty & /*isVisible, item*/
-      524289 && t0_value !== (t0_value = /*isVisible*/
-      (ctx2[19] ? (
+      1048577 && t0_value !== (t0_value = /*isVisible*/
+      (ctx2[20] ? (
         /*item*/
         ctx2[0].displayName
       ) : "") + ""))
         set_data(t0, t0_value);
       if (
         /*isVisible*/
-        ctx2[19]
+        ctx2[20]
       ) {
         if (if_block) {
           if_block.p(ctx2, dirty);
@@ -2212,15 +2275,15 @@ function create_fragment4(ctx) {
   let updating_isVisible;
   let current;
   function ondemandrender_isVisible_binding(value) {
-    ctx[16](value);
+    ctx[17](value);
   }
   let ondemandrender_props = {
     cssClass: "tree-item nav-file",
     $$slots: {
       default: [
         create_default_slot,
-        ({ isVisible }) => ({ 19: isVisible }),
-        ({ isVisible }) => isVisible ? 524288 : 0
+        ({ isVisible }) => ({ 20: isVisible }),
+        ({ isVisible }) => isVisible ? 1048576 : 0
       ]
     },
     $$scope: { ctx }
@@ -2245,7 +2308,7 @@ function create_fragment4(ctx) {
     p(ctx2, [dirty]) {
       const ondemandrender_changes = {};
       if (dirty & /*$$scope, draggable, item, isActive, openFile, showMenu, trail, extraTagsHtml, isVisible*/
-      1573103) {
+      3145967) {
         ondemandrender_changes.$$scope = { dirty, ctx: ctx2 };
       }
       if (!updating_isVisible && dirty & /*isItemVisible*/
@@ -2278,7 +2341,8 @@ function instance4($$self, $$props, $$invalidate) {
   let isActive;
   let draggable;
   let $tagFolderSetting;
-  component_subscribe($$self, tagFolderSetting, ($$value) => $$invalidate(17, $tagFolderSetting = $$value));
+  component_subscribe($$self, tagFolderSetting, ($$value) => $$invalidate(18, $tagFolderSetting = $$value));
+  let { viewType = "tags" } = $$props;
   let { item } = $$props;
   let { trail } = $$props;
   let { openFile } = $$props;
@@ -2290,10 +2354,10 @@ function instance4($$self, $$props, $$invalidate) {
   let _currentActiveFilePath = "";
   let _setting = $tagFolderSetting;
   currentFile.subscribe((path) => {
-    $$invalidate(11, _currentActiveFilePath = path);
+    $$invalidate(12, _currentActiveFilePath = path);
   });
   tagFolderSetting.subscribe((setting) => {
-    $$invalidate(12, _setting = setting);
+    $$invalidate(13, _setting = setting);
   });
   let extraTagsHtml = "";
   let isItemVisible = false;
@@ -2317,6 +2381,8 @@ function instance4($$self, $$props, $$invalidate) {
     $$invalidate(4, isItemVisible);
   }
   $$self.$$set = ($$props2) => {
+    if ("viewType" in $$props2)
+      $$invalidate(10, viewType = $$props2.viewType);
     if ("item" in $$props2)
       $$invalidate(0, item = $$props2.item);
     if ("trail" in $$props2)
@@ -2326,16 +2392,16 @@ function instance4($$self, $$props, $$invalidate) {
     if ("showMenu" in $$props2)
       $$invalidate(3, showMenu = $$props2.showMenu);
     if ("hoverPreview" in $$props2)
-      $$invalidate(10, hoverPreview = $$props2.hoverPreview);
+      $$invalidate(11, hoverPreview = $$props2.hoverPreview);
   };
   $$self.$$.update = () => {
     if ($$self.$$.dirty & /*item, _currentActiveFilePath*/
-    2049) {
+    4097) {
       $:
         $$invalidate(7, isActive = item.path == _currentActiveFilePath);
     }
     if ($$self.$$.dirty & /*isItemVisible, item, trail, _setting*/
-    4115) {
+    8211) {
       $: {
         if (isItemVisible) {
           const tagsLeft = uniqueCaseIntensive(getExtraTags(item.tags, [...trail], _setting.reduceNestedParent).map((e) => trimSlash(e, false, true)).filter((e) => e != ""));
@@ -2344,7 +2410,7 @@ function instance4($$self, $$props, $$invalidate) {
       }
     }
     if ($$self.$$.dirty & /*_setting*/
-    4096) {
+    8192) {
       $:
         $$invalidate(6, draggable = !_setting.disableDragging);
     }
@@ -2360,6 +2426,7 @@ function instance4($$self, $$props, $$invalidate) {
     isActive,
     handleMouseover,
     dragStartFile,
+    viewType,
     hoverPreview,
     _currentActiveFilePath,
     _setting,
@@ -2373,11 +2440,12 @@ var V2TreeItemComponent = class extends SvelteComponent {
   constructor(options) {
     super();
     init(this, options, instance4, create_fragment4, safe_not_equal, {
+      viewType: 10,
       item: 0,
       trail: 1,
       openFile: 2,
       showMenu: 3,
-      hoverPreview: 10
+      hoverPreview: 11
     });
   }
 };
@@ -2386,25 +2454,25 @@ var V2TreeItemComponent_default = V2TreeItemComponent;
 // V2TreeFolderComponent.svelte
 function get_each_context2(ctx, list, i) {
   const child_ctx = ctx.slice();
-  child_ctx[12] = list[i];
+  child_ctx[13] = list[i];
   return child_ctx;
 }
 function get_each_context_1(ctx, list, i) {
   const child_ctx = ctx.slice();
-  child_ctx[54] = list[i];
+  child_ctx[66] = list[i];
   return child_ctx;
 }
 function get_each_context_2(ctx, list, i) {
   const child_ctx = ctx.slice();
-  child_ctx[12] = list[i];
+  child_ctx[13] = list[i];
   return child_ctx;
 }
 function get_each_context_3(ctx, list, i) {
   const child_ctx = ctx.slice();
-  child_ctx[59] = list[i][0];
+  child_ctx[71] = list[i][0];
   child_ctx[0] = list[i][1];
   child_ctx[1] = list[i][2];
-  child_ctx[60] = list[i][3];
+  child_ctx[72] = list[i][3];
   return child_ctx;
 }
 function create_else_block(ctx) {
@@ -2412,21 +2480,21 @@ function create_else_block(ctx) {
   let updating_isVisible;
   let current;
   function ondemandrender_isVisible_binding(value) {
-    ctx[42](value);
+    ctx[52](value);
   }
   let ondemandrender_props = {
     cssClass: `tree-item-self${!/*isRoot*/
-    ctx[3] ? " is-clickable mod-collapsible" : ""} nav-folder-title tag-folder-title${/*isActive*/
-    ctx[21] ? " is-active" : ""}`,
+    ctx[4] ? " is-clickable mod-collapsible" : ""} nav-folder-title tag-folder-title${/*isActive*/
+    ctx[24] ? " is-active" : ""}`,
     $$slots: { default: [create_default_slot2] },
     $$scope: { ctx }
   };
   if (
     /*isFolderVisible*/
-    ctx[16] !== void 0
+    ctx[17] !== void 0
   ) {
     ondemandrender_props.isVisible = /*isFolderVisible*/
-    ctx[16];
+    ctx[17];
   }
   ondemandrender = new OnDemandRender_default({ props: ondemandrender_props });
   binding_callbacks.push(() => bind(ondemandrender, "isVisible", ondemandrender_isVisible_binding));
@@ -2441,20 +2509,20 @@ function create_else_block(ctx) {
     p(ctx2, dirty) {
       const ondemandrender_changes = {};
       if (dirty[0] & /*isRoot, isActive*/
-      2097160)
+      16777232)
         ondemandrender_changes.cssClass = `tree-item-self${!/*isRoot*/
-        ctx2[3] ? " is-clickable mod-collapsible" : ""} nav-folder-title tag-folder-title${/*isActive*/
-        ctx2[21] ? " is-active" : ""}`;
-      if (dirty[0] & /*trail, _items, draggable, tagsDispHtml, isFolderVisible, collapsed, folderIcon*/
-      5840964 | dirty[2] & /*$$scope*/
-      2) {
+        ctx2[4] ? " is-clickable mod-collapsible" : ""} nav-folder-title tag-folder-title${/*isActive*/
+        ctx2[24] ? " is-active" : ""}`;
+      if (dirty[0] & /*trail, _items, draggable, itemCount, tagsDispHtml, isFolderVisible, collapsed, folderIcon*/
+      48382088 | dirty[2] & /*$$scope*/
+      8192) {
         ondemandrender_changes.$$scope = { dirty, ctx: ctx2 };
       }
       if (!updating_isVisible && dirty[0] & /*isFolderVisible*/
-      65536) {
+      131072) {
         updating_isVisible = true;
         ondemandrender_changes.isVisible = /*isFolderVisible*/
-        ctx2[16];
+        ctx2[17];
         add_flush_callback(() => updating_isVisible = false);
       }
       ondemandrender.$set(ondemandrender_changes);
@@ -2478,7 +2546,7 @@ function create_if_block_1(ctx) {
   let if_block_anchor;
   let if_block = (
     /*isRoot*/
-    ctx[3] && create_if_block_2(ctx)
+    ctx[4] && create_if_block_2(ctx)
   );
   return {
     c() {
@@ -2494,7 +2562,7 @@ function create_if_block_1(ctx) {
     p(ctx2, dirty) {
       if (
         /*isRoot*/
-        ctx2[3]
+        ctx2[4]
       ) {
         if (if_block) {
           if_block.p(ctx2, dirty);
@@ -2549,7 +2617,7 @@ function create_if_block_4(ctx) {
     m(target, anchor) {
       html_tag.m(
         /*folderIcon*/
-        ctx[6],
+        ctx[7],
         target,
         anchor
       );
@@ -2557,10 +2625,10 @@ function create_if_block_4(ctx) {
     },
     p(ctx2, dirty) {
       if (dirty[0] & /*folderIcon*/
-      64)
+      128)
         html_tag.p(
           /*folderIcon*/
-          ctx2[6]
+          ctx2[7]
         );
     },
     d(detaching) {
@@ -2602,36 +2670,36 @@ function create_if_block_3(ctx) {
         div,
         "draggable",
         /*draggable*/
-        ctx[19]
+        ctx[21]
       );
     },
     m(target, anchor) {
       insert(target, div, anchor);
       div.innerHTML = /*tagsDispHtml*/
-      ctx[20];
+      ctx[23];
       if (!mounted) {
         dispose = listen(
           div,
           "dragstart",
           /*dragStartName*/
-          ctx[26]
+          ctx[29]
         );
         mounted = true;
       }
     },
     p(ctx2, dirty) {
       if (dirty[0] & /*tagsDispHtml*/
-      1048576)
+      8388608)
         div.innerHTML = /*tagsDispHtml*/
-        ctx2[20];
+        ctx2[23];
       ;
       if (dirty[0] & /*draggable*/
-      524288) {
+      2097152) {
         attr(
           div,
           "draggable",
           /*draggable*/
-          ctx2[19]
+          ctx2[21]
         );
       }
     },
@@ -2645,24 +2713,19 @@ function create_if_block_3(ctx) {
   };
 }
 function create_default_slot2(ctx) {
-  var _a, _b;
   let div0;
   let t0;
   let div2;
   let t1;
   let div1;
   let span;
-  let t2_value = (
-    /*_items*/
-    ((_b = (_a = ctx[13]) == null ? void 0 : _a.length) != null ? _b : 0) + ""
-  );
   let t2;
   let mounted;
   let dispose;
   function select_block_type_1(ctx2, dirty) {
     if (
       /*isFolderVisible*/
-      ctx2[16]
+      ctx2[17]
     )
       return create_if_block_4;
     return create_else_block_2;
@@ -2672,7 +2735,7 @@ function create_default_slot2(ctx) {
   function select_block_type_2(ctx2, dirty) {
     if (
       /*isFolderVisible*/
-      ctx2[16]
+      ctx2[17]
     )
       return create_if_block_3;
     return create_else_block_1;
@@ -2689,20 +2752,23 @@ function create_default_slot2(ctx) {
       t1 = space();
       div1 = element("div");
       span = element("span");
-      t2 = text(t2_value);
+      t2 = text(
+        /*itemCount*/
+        ctx[22]
+      );
       attr(div0, "class", "tree-item-icon collapse-icon nav-folder-collapse-indicator");
       toggle_class(
         div0,
         "is-collapsed",
         /*collapsed*/
-        ctx[22]
+        ctx[25]
       );
       attr(span, "class", "itemscount");
       attr(
         span,
         "draggable",
         /*draggable*/
-        ctx[19]
+        ctx[21]
       );
       attr(div1, "class", "tagfolder-quantity itemscount");
       attr(div2, "class", "tree-item-inner nav-folder-title-content lsl-f");
@@ -2723,26 +2789,31 @@ function create_default_slot2(ctx) {
             div0,
             "click",
             /*toggleFolder*/
-            ctx[24]
+            ctx[27]
           ),
           listen(
             span,
             "dragstart",
             /*dragStartFiles*/
-            ctx[25]
+            ctx[28]
           ),
           listen(
             div1,
             "click",
             /*click_handler*/
-            ctx[41]
+            ctx[51]
+          ),
+          listen(
+            div2,
+            "click",
+            /*handleOpenItem*/
+            ctx[30]
           )
         ];
         mounted = true;
       }
     },
     p(ctx2, dirty) {
-      var _a2, _b2;
       if (current_block_type === (current_block_type = select_block_type_1(ctx2, dirty)) && if_block0) {
         if_block0.p(ctx2, dirty);
       } else {
@@ -2754,12 +2825,12 @@ function create_default_slot2(ctx) {
         }
       }
       if (dirty[0] & /*collapsed*/
-      4194304) {
+      33554432) {
         toggle_class(
           div0,
           "is-collapsed",
           /*collapsed*/
-          ctx2[22]
+          ctx2[25]
         );
       }
       if (current_block_type_1 === (current_block_type_1 = select_block_type_2(ctx2, dirty)) && if_block1) {
@@ -2772,17 +2843,20 @@ function create_default_slot2(ctx) {
           if_block1.m(div2, t1);
         }
       }
-      if (dirty[0] & /*_items*/
-      8192 && t2_value !== (t2_value = /*_items*/
-      ((_b2 = (_a2 = ctx2[13]) == null ? void 0 : _a2.length) != null ? _b2 : 0) + ""))
-        set_data(t2, t2_value);
+      if (dirty[0] & /*itemCount*/
+      4194304)
+        set_data(
+          t2,
+          /*itemCount*/
+          ctx2[22]
+        );
       if (dirty[0] & /*draggable*/
-      524288) {
+      2097152) {
         attr(
           span,
           "draggable",
           /*draggable*/
-          ctx2[19]
+          ctx2[21]
         );
       }
     },
@@ -2809,7 +2883,7 @@ function create_if_block_2(ctx) {
       div0 = element("div");
       t = text(
         /*headerTitle*/
-        ctx[7]
+        ctx[8]
       );
       attr(div0, "class", "tree-item-inner nav-folder-title-content");
       attr(div1, "class", "tree-item-self nav-folder-title");
@@ -2821,11 +2895,11 @@ function create_if_block_2(ctx) {
     },
     p(ctx2, dirty) {
       if (dirty[0] & /*headerTitle*/
-      128)
+      256)
         set_data(
           t,
           /*headerTitle*/
-          ctx2[7]
+          ctx2[8]
         );
     },
     d(detaching) {
@@ -2841,7 +2915,7 @@ function create_if_block2(ctx) {
   let current;
   let each_value_2 = ensure_array_like(
     /*childrenDisp*/
-    ctx[17]
+    ctx[18]
   );
   let each_blocks_1 = [];
   for (let i = 0; i < each_value_2.length; i += 1) {
@@ -2852,7 +2926,7 @@ function create_if_block2(ctx) {
   });
   let each_value = ensure_array_like(
     /*leftOverItemsDisp*/
-    ctx[18]
+    ctx[19]
   );
   let each_blocks = [];
   for (let i = 0; i < each_value.length; i += 1) {
@@ -2889,11 +2963,11 @@ function create_if_block2(ctx) {
       current = true;
     },
     p(ctx2, dirty) {
-      if (dirty[0] & /*childrenDisp, trail, suppressLevels, folderIcon, openFile, showMenu, isMainTree, openScrollView, hoverPreview, isInDedicatedTag, depth*/
-      184180) {
+      if (dirty[0] & /*childrenDisp, viewType, trail, suppressLevels, folderIcon, openFile, showMenu, isMainTree, openScrollView, hoverPreview, isInDedicatedTag, depth*/
+      368364) {
         each_value_2 = ensure_array_like(
           /*childrenDisp*/
-          ctx2[17]
+          ctx2[18]
         );
         let i;
         for (i = 0; i < each_value_2.length; i += 1) {
@@ -2915,10 +2989,10 @@ function create_if_block2(ctx) {
         check_outros();
       }
       if (dirty[0] & /*leftOverItemsDisp, openFile, isRoot, trail, suppressLevels, showMenu, hoverPreview*/
-      296716) {
+      593432) {
         each_value = ensure_array_like(
           /*leftOverItemsDisp*/
-          ctx2[18]
+          ctx2[19]
         );
         let i;
         for (i = 0; i < each_value.length; i += 1) {
@@ -2976,46 +3050,50 @@ function create_each_block_3(ctx) {
   let current;
   v2treefoldercomponent = new V2TreeFolderComponent({
     props: {
+      viewType: (
+        /*viewType*/
+        ctx[2]
+      ),
       items: (
         /*subitems*/
-        ctx[60]
+        ctx[72]
       ),
       thisName: (
         /*f*/
-        ctx[59]
+        ctx[71]
       ),
       trail: [
         .../*trail*/
-        ctx[2],
+        ctx[3],
         .../*suppressLevels*/
-        ctx[15],
+        ctx[16],
         /*f*/
-        ctx[59]
+        ctx[71]
       ],
       folderIcon: (
         /*folderIcon*/
-        ctx[6]
+        ctx[7]
       ),
       openFile: (
         /*openFile*/
-        ctx[9]
+        ctx[10]
       ),
       isRoot: false,
       showMenu: (
         /*showMenu*/
-        ctx[8]
+        ctx[9]
       ),
       isMainTree: (
         /*isMainTree*/
-        ctx[4]
+        ctx[5]
       ),
       openScrollView: (
         /*openScrollView*/
-        ctx[11]
+        ctx[12]
       ),
       hoverPreview: (
         /*hoverPreview*/
-        ctx[10]
+        ctx[11]
       ),
       tagName: (
         /*tagName*/
@@ -3027,12 +3105,12 @@ function create_each_block_3(ctx) {
       ),
       depth: (
         /*isInDedicatedTag*/
-        ctx[14] ? (
+        ctx[15] ? (
           /*depth*/
-          ctx[5]
+          ctx[6]
         ) : (
           /*depth*/
-          ctx[5] + 1
+          ctx[6] + 1
         )
       )
     }
@@ -3047,65 +3125,69 @@ function create_each_block_3(ctx) {
     },
     p(ctx2, dirty) {
       const v2treefoldercomponent_changes = {};
+      if (dirty[0] & /*viewType*/
+      4)
+        v2treefoldercomponent_changes.viewType = /*viewType*/
+        ctx2[2];
       if (dirty[0] & /*childrenDisp*/
-      131072)
+      262144)
         v2treefoldercomponent_changes.items = /*subitems*/
-        ctx2[60];
+        ctx2[72];
       if (dirty[0] & /*childrenDisp*/
-      131072)
+      262144)
         v2treefoldercomponent_changes.thisName = /*f*/
-        ctx2[59];
+        ctx2[71];
       if (dirty[0] & /*trail, suppressLevels, childrenDisp*/
-      163844)
+      327688)
         v2treefoldercomponent_changes.trail = [
           .../*trail*/
-          ctx2[2],
+          ctx2[3],
           .../*suppressLevels*/
-          ctx2[15],
+          ctx2[16],
           /*f*/
-          ctx2[59]
+          ctx2[71]
         ];
       if (dirty[0] & /*folderIcon*/
-      64)
+      128)
         v2treefoldercomponent_changes.folderIcon = /*folderIcon*/
-        ctx2[6];
+        ctx2[7];
       if (dirty[0] & /*openFile*/
-      512)
-        v2treefoldercomponent_changes.openFile = /*openFile*/
-        ctx2[9];
-      if (dirty[0] & /*showMenu*/
-      256)
-        v2treefoldercomponent_changes.showMenu = /*showMenu*/
-        ctx2[8];
-      if (dirty[0] & /*isMainTree*/
-      16)
-        v2treefoldercomponent_changes.isMainTree = /*isMainTree*/
-        ctx2[4];
-      if (dirty[0] & /*openScrollView*/
-      2048)
-        v2treefoldercomponent_changes.openScrollView = /*openScrollView*/
-        ctx2[11];
-      if (dirty[0] & /*hoverPreview*/
       1024)
-        v2treefoldercomponent_changes.hoverPreview = /*hoverPreview*/
+        v2treefoldercomponent_changes.openFile = /*openFile*/
         ctx2[10];
+      if (dirty[0] & /*showMenu*/
+      512)
+        v2treefoldercomponent_changes.showMenu = /*showMenu*/
+        ctx2[9];
+      if (dirty[0] & /*isMainTree*/
+      32)
+        v2treefoldercomponent_changes.isMainTree = /*isMainTree*/
+        ctx2[5];
+      if (dirty[0] & /*openScrollView*/
+      4096)
+        v2treefoldercomponent_changes.openScrollView = /*openScrollView*/
+        ctx2[12];
+      if (dirty[0] & /*hoverPreview*/
+      2048)
+        v2treefoldercomponent_changes.hoverPreview = /*hoverPreview*/
+        ctx2[11];
       if (dirty[0] & /*childrenDisp*/
-      131072)
+      262144)
         v2treefoldercomponent_changes.tagName = /*tagName*/
         ctx2[0];
       if (dirty[0] & /*childrenDisp*/
-      131072)
+      262144)
         v2treefoldercomponent_changes.tagNameDisp = /*tagNameDisp*/
         ctx2[1];
       if (dirty[0] & /*isInDedicatedTag, depth*/
-      16416)
+      32832)
         v2treefoldercomponent_changes.depth = /*isInDedicatedTag*/
-        ctx2[14] ? (
+        ctx2[15] ? (
           /*depth*/
-          ctx2[5]
+          ctx2[6]
         ) : (
           /*depth*/
-          ctx2[5] + 1
+          ctx2[6] + 1
         );
       v2treefoldercomponent.$set(v2treefoldercomponent_changes);
     },
@@ -3129,7 +3211,7 @@ function create_each_block_2(ctx) {
   let current;
   let each_value_3 = ensure_array_like(
     /*items*/
-    ctx[12]
+    ctx[13]
   );
   let each_blocks = [];
   for (let i = 0; i < each_value_3.length; i += 1) {
@@ -3155,11 +3237,11 @@ function create_each_block_2(ctx) {
       current = true;
     },
     p(ctx2, dirty) {
-      if (dirty[0] & /*childrenDisp, trail, suppressLevels, folderIcon, openFile, showMenu, isMainTree, openScrollView, hoverPreview, isInDedicatedTag, depth*/
-      184180) {
+      if (dirty[0] & /*viewType, childrenDisp, trail, suppressLevels, folderIcon, openFile, showMenu, isMainTree, openScrollView, hoverPreview, isInDedicatedTag, depth*/
+      368364) {
         each_value_3 = ensure_array_like(
           /*items*/
-          ctx2[12]
+          ctx2[13]
         );
         let i;
         for (i = 0; i < each_value_3.length; i += 1) {
@@ -3211,26 +3293,26 @@ function create_each_block_1(ctx) {
     props: {
       item: (
         /*item*/
-        ctx[54]
+        ctx[66]
       ),
       openFile: (
         /*openFile*/
-        ctx[9]
+        ctx[10]
       ),
       trail: (
         /*isRoot*/
-        ctx[3] ? [.../*trail*/
-        ctx[2]] : [.../*trail*/
-        ctx[2], .../*suppressLevels*/
-        ctx[15]]
+        ctx[4] ? [.../*trail*/
+        ctx[3]] : [.../*trail*/
+        ctx[3], .../*suppressLevels*/
+        ctx[16]]
       ),
       showMenu: (
         /*showMenu*/
-        ctx[8]
+        ctx[9]
       ),
       hoverPreview: (
         /*hoverPreview*/
-        ctx[10]
+        ctx[11]
       )
     }
   });
@@ -3245,28 +3327,28 @@ function create_each_block_1(ctx) {
     p(ctx2, dirty) {
       const treeitemitemcomponent_changes = {};
       if (dirty[0] & /*leftOverItemsDisp*/
-      262144)
+      524288)
         treeitemitemcomponent_changes.item = /*item*/
-        ctx2[54];
+        ctx2[66];
       if (dirty[0] & /*openFile*/
-      512)
-        treeitemitemcomponent_changes.openFile = /*openFile*/
-        ctx2[9];
-      if (dirty[0] & /*isRoot, trail, suppressLevels*/
-      32780)
-        treeitemitemcomponent_changes.trail = /*isRoot*/
-        ctx2[3] ? [.../*trail*/
-        ctx2[2]] : [.../*trail*/
-        ctx2[2], .../*suppressLevels*/
-        ctx2[15]];
-      if (dirty[0] & /*showMenu*/
-      256)
-        treeitemitemcomponent_changes.showMenu = /*showMenu*/
-        ctx2[8];
-      if (dirty[0] & /*hoverPreview*/
       1024)
-        treeitemitemcomponent_changes.hoverPreview = /*hoverPreview*/
+        treeitemitemcomponent_changes.openFile = /*openFile*/
         ctx2[10];
+      if (dirty[0] & /*isRoot, trail, suppressLevels*/
+      65560)
+        treeitemitemcomponent_changes.trail = /*isRoot*/
+        ctx2[4] ? [.../*trail*/
+        ctx2[3]] : [.../*trail*/
+        ctx2[3], .../*suppressLevels*/
+        ctx2[16]];
+      if (dirty[0] & /*showMenu*/
+      512)
+        treeitemitemcomponent_changes.showMenu = /*showMenu*/
+        ctx2[9];
+      if (dirty[0] & /*hoverPreview*/
+      2048)
+        treeitemitemcomponent_changes.hoverPreview = /*hoverPreview*/
+        ctx2[11];
       treeitemitemcomponent.$set(treeitemitemcomponent_changes);
     },
     i(local) {
@@ -3289,7 +3371,7 @@ function create_each_block2(ctx) {
   let current;
   let each_value_1 = ensure_array_like(
     /*items*/
-    ctx[12]
+    ctx[13]
   );
   let each_blocks = [];
   for (let i = 0; i < each_value_1.length; i += 1) {
@@ -3316,10 +3398,10 @@ function create_each_block2(ctx) {
     },
     p(ctx2, dirty) {
       if (dirty[0] & /*leftOverItemsDisp, openFile, isRoot, trail, suppressLevels, showMenu, hoverPreview*/
-      296716) {
+      593432) {
         each_value_1 = ensure_array_like(
           /*items*/
-          ctx2[12]
+          ctx2[13]
         );
         let i;
         for (i = 0; i < each_value_1.length; i += 1) {
@@ -3378,8 +3460,8 @@ function create_fragment5(ctx) {
   function select_block_type(ctx2, dirty) {
     if (
       /*isRoot*/
-      ctx2[3] || !/*isMainTree*/
-      ctx2[4]
+      ctx2[4] || !/*isMainTree*/
+      ctx2[5]
     )
       return 0;
     return 1;
@@ -3387,7 +3469,7 @@ function create_fragment5(ctx) {
   current_block_type_index = select_block_type(ctx, [-1, -1, -1]);
   if_block0 = if_blocks[current_block_type_index] = if_block_creators[current_block_type_index](ctx);
   let if_block1 = !/*collapsed*/
-  ctx[22] && create_if_block2(ctx);
+  ctx[25] && create_if_block2(ctx);
   return {
     c() {
       div = element("div");
@@ -3396,8 +3478,8 @@ function create_fragment5(ctx) {
       if (if_block1)
         if_block1.c();
       attr(div, "class", div_class_value = `tree-item nav-folder${/*collapsed*/
-      ctx[22] ? " is-collapsed" : ""}${/*isRoot*/
-      ctx[3] ? " mod-root" : ""}`);
+      ctx[25] ? " is-collapsed" : ""}${/*isRoot*/
+      ctx[4] ? " mod-root" : ""}`);
     },
     m(target, anchor) {
       insert(target, div, anchor);
@@ -3410,11 +3492,11 @@ function create_fragment5(ctx) {
         dispose = [
           listen(div, "click", stop_propagation(
             /*toggleFolder*/
-            ctx[24]
+            ctx[27]
           )),
           listen(div, "contextmenu", stop_propagation(
             /*contextmenu_handler*/
-            ctx[43]
+            ctx[53]
           ))
         ];
         mounted = true;
@@ -3442,11 +3524,11 @@ function create_fragment5(ctx) {
         if_block0.m(div, t);
       }
       if (!/*collapsed*/
-      ctx2[22]) {
+      ctx2[25]) {
         if (if_block1) {
           if_block1.p(ctx2, dirty);
           if (dirty[0] & /*collapsed*/
-          4194304) {
+          33554432) {
             transition_in(if_block1, 1);
           }
         } else {
@@ -3463,9 +3545,9 @@ function create_fragment5(ctx) {
         check_outros();
       }
       if (!current || dirty[0] & /*collapsed, isRoot*/
-      4194312 && div_class_value !== (div_class_value = `tree-item nav-folder${/*collapsed*/
-      ctx2[22] ? " is-collapsed" : ""}${/*isRoot*/
-      ctx2[3] ? " mod-root" : ""}`)) {
+      33554448 && div_class_value !== (div_class_value = `tree-item nav-folder${/*collapsed*/
+      ctx2[25] ? " is-collapsed" : ""}${/*isRoot*/
+      ctx2[4] ? " mod-root" : ""}`)) {
         attr(div, "class", div_class_value);
       }
     },
@@ -3518,17 +3600,22 @@ function splitArrayToBatch(items) {
   return ret;
 }
 function instance5($$self, $$props, $$invalidate) {
+  let filename;
   let trailKey;
   let collapsed;
   let sortFunc;
   let trailLower;
   let isActive;
+  let classKey;
   let tagsDispHtml;
+  let itemCount;
   let draggable;
   let $tagFolderSetting;
   let $v2expandedTags;
-  component_subscribe($$self, tagFolderSetting, ($$value) => $$invalidate(48, $tagFolderSetting = $$value));
-  component_subscribe($$self, v2expandedTags, ($$value) => $$invalidate(40, $v2expandedTags = $$value));
+  component_subscribe($$self, tagFolderSetting, ($$value) => $$invalidate(58, $tagFolderSetting = $$value));
+  component_subscribe($$self, v2expandedTags, ($$value) => $$invalidate(50, $v2expandedTags = $$value));
+  var _a, _b;
+  let { viewType = "tags" } = $$props;
   let { thisName = "" } = $$props;
   let { items = [] } = $$props;
   let _items = [];
@@ -3549,23 +3636,36 @@ function instance5($$self, $$props, $$invalidate) {
       return;
     const collapsedNew = !expTags.has(trailKey);
     if (collapsed != collapsedNew) {
-      $$invalidate(22, collapsed = collapsedNew);
+      $$invalidate(25, collapsed = collapsedNew);
     }
   });
   let _setting = $tagFolderSetting;
+  let expandLimit = 0;
   tagFolderSetting.subscribe((setting) => {
-    $$invalidate(28, _setting = setting);
+    $$invalidate(34, _setting = setting);
+    $$invalidate(35, expandLimit = 0);
+    if (_setting.expandLimit) {
+      if (viewType == "links") {
+        $$invalidate(35, expandLimit = _setting.expandLimit + 1);
+      } else {
+        $$invalidate(35, expandLimit = _setting.expandLimit);
+      }
+    }
   });
   let _tagInfo = {};
   tagInfo.subscribe((info) => {
-    $$invalidate(29, _tagInfo = info);
+    $$invalidate(36, _tagInfo = info);
   });
   let _currentActiveFilePath = "";
   currentFile.subscribe((path) => {
-    $$invalidate(30, _currentActiveFilePath = path);
+    $$invalidate(37, _currentActiveFilePath = path);
   });
   function handleOpenScroll(e, trails, filePaths) {
-    openScrollView(null, "", joinPartialPath(removeIntermediatePath(trails)).join(", "), filePaths);
+    if (viewType == "tags") {
+      openScrollView(null, "", joinPartialPath(removeIntermediatePath(trails)).join(", "), filePaths);
+    } else if (viewType == "links") {
+      openScrollView(null, "", `Linked to ${filename}`, filePaths);
+    }
     e.preventDefault();
   }
   function toggleFolder(evt) {
@@ -3595,6 +3695,9 @@ function instance5($$self, $$props, $$invalidate) {
   let leftOverItems = [];
   let leftOverItemsDisp = [];
   let tagsDisp = [];
+  let thisLinks = [];
+  let thisInfo;
+  let linkedItems = /* @__PURE__ */ new Map();
   let isFolderVisible = false;
   let queueLeftOverItems = [];
   let batchedLeftOverItems = [];
@@ -3604,7 +3707,7 @@ function instance5($$self, $$props, $$invalidate) {
       return;
     }
     if (leftOverItemsDisp.length != 0) {
-      $$invalidate(18, leftOverItemsDisp = splitArrayToBatch(items2));
+      $$invalidate(19, leftOverItemsDisp = splitArrayToBatch(items2));
       return;
     }
     try {
@@ -3614,9 +3717,9 @@ function instance5($$self, $$props, $$invalidate) {
       }
       batchedLeftOverItems = allOfBatch;
       queueLeftOverItems = [];
-      $$invalidate(18, leftOverItemsDisp = []);
+      $$invalidate(19, leftOverItemsDisp = []);
       for (const batch of batchedLeftOverItems) {
-        $$invalidate(18, leftOverItemsDisp = [...leftOverItemsDisp, batch]);
+        $$invalidate(19, leftOverItemsDisp = [...leftOverItemsDisp, batch]);
         if (batch.length == batchSize) {
           await doEvents();
           await tick();
@@ -3640,7 +3743,7 @@ function instance5($$self, $$props, $$invalidate) {
       return;
     }
     if (childrenDisp.length != 0) {
-      $$invalidate(17, childrenDisp = splitArrayToBatch(items2));
+      $$invalidate(18, childrenDisp = splitArrayToBatch(items2));
       return;
     }
     try {
@@ -3649,9 +3752,9 @@ function instance5($$self, $$props, $$invalidate) {
         return;
       }
       batchedChildren = allOfBatch;
-      $$invalidate(17, childrenDisp = []);
+      $$invalidate(18, childrenDisp = []);
       for (const batch of batchedChildren) {
-        $$invalidate(17, childrenDisp = [...childrenDisp, batch]);
+        $$invalidate(18, childrenDisp = [...childrenDisp, batch]);
         if (batch.length == batchSize) {
           await doEvents();
           await tick();
@@ -3680,6 +3783,9 @@ function instance5($$self, $$props, $$invalidate) {
   function dragStartName(args) {
     if (!draggable)
       return;
+    if (viewType == "links") {
+      return dragStartFile(args);
+    }
     const expandedTagsAll = [
       ...ancestorToLongestTag(ancestorToTags(joinPartialPath(removeIntermediatePath([...trail, ...suppressLevels]))))
     ].map((e) => trimTrailingSlash(e));
@@ -3690,77 +3796,115 @@ function instance5($$self, $$props, $$invalidate) {
     args.draggable = true;
     dm.onDragStart(args, args);
   }
+  function dragStartFile(args) {
+    if (!draggable)
+      return;
+    const file = app.vault.getAbstractFileByPath(filename);
+    const param = dm.dragFile(args, file);
+    if (param) {
+      return dm.onDragStart(args, param);
+    }
+  }
+  function handleOpenItem(evt) {
+    if (viewType == "tags")
+      return;
+    evt.preventDefault();
+    evt.stopPropagation();
+    openFile(filename, evt.metaKey || evt.ctrlKey);
+  }
   const click_handler = (e) => handleOpenScroll(e, trail, _items.map((e2) => e2.path));
   function ondemandrender_isVisible_binding(value) {
     isFolderVisible = value;
-    $$invalidate(16, isFolderVisible);
+    $$invalidate(17, isFolderVisible);
   }
   const contextmenu_handler = (evt) => {
     if (shouldResponsibleFor(evt))
-      showMenu(evt, [...trail, ...suppressLevels], tagName, _items);
+      showMenu(evt, [...trail, ...suppressLevels], viewType == "tags" ? tagName : filename, _items);
   };
   $$self.$$set = ($$props2) => {
+    if ("viewType" in $$props2)
+      $$invalidate(2, viewType = $$props2.viewType);
     if ("thisName" in $$props2)
-      $$invalidate(27, thisName = $$props2.thisName);
+      $$invalidate(31, thisName = $$props2.thisName);
     if ("items" in $$props2)
-      $$invalidate(12, items = $$props2.items);
+      $$invalidate(13, items = $$props2.items);
     if ("tagName" in $$props2)
       $$invalidate(0, tagName = $$props2.tagName);
     if ("tagNameDisp" in $$props2)
       $$invalidate(1, tagNameDisp = $$props2.tagNameDisp);
     if ("trail" in $$props2)
-      $$invalidate(2, trail = $$props2.trail);
+      $$invalidate(3, trail = $$props2.trail);
     if ("isRoot" in $$props2)
-      $$invalidate(3, isRoot = $$props2.isRoot);
+      $$invalidate(4, isRoot = $$props2.isRoot);
     if ("isMainTree" in $$props2)
-      $$invalidate(4, isMainTree = $$props2.isMainTree);
+      $$invalidate(5, isMainTree = $$props2.isMainTree);
     if ("depth" in $$props2)
-      $$invalidate(5, depth = $$props2.depth);
+      $$invalidate(6, depth = $$props2.depth);
     if ("folderIcon" in $$props2)
-      $$invalidate(6, folderIcon = $$props2.folderIcon);
+      $$invalidate(7, folderIcon = $$props2.folderIcon);
     if ("headerTitle" in $$props2)
-      $$invalidate(7, headerTitle = $$props2.headerTitle);
+      $$invalidate(8, headerTitle = $$props2.headerTitle);
     if ("showMenu" in $$props2)
-      $$invalidate(8, showMenu = $$props2.showMenu);
+      $$invalidate(9, showMenu = $$props2.showMenu);
     if ("openFile" in $$props2)
-      $$invalidate(9, openFile = $$props2.openFile);
+      $$invalidate(10, openFile = $$props2.openFile);
     if ("hoverPreview" in $$props2)
-      $$invalidate(10, hoverPreview = $$props2.hoverPreview);
+      $$invalidate(11, hoverPreview = $$props2.hoverPreview);
     if ("openScrollView" in $$props2)
-      $$invalidate(11, openScrollView = $$props2.openScrollView);
+      $$invalidate(12, openScrollView = $$props2.openScrollView);
   };
   $$self.$$.update = () => {
-    if ($$self.$$.dirty[0] & /*trail*/
-    4) {
+    if ($$self.$$.dirty[0] & /*viewType*/
+    4 | $$self.$$.dirty[1] & /*thisName*/
+    1) {
       $:
-        $$invalidate(39, trailKey = trail.join("*"));
+        $$invalidate(20, filename = viewType == "tags" ? "" : thisName.substring(thisName.indexOf(":") + 1));
+    }
+    if ($$self.$$.dirty[0] & /*trail*/
+    8) {
+      $:
+        $$invalidate(49, trailKey = trail.join("*"));
     }
     if ($$self.$$.dirty[0] & /*isRoot*/
-    8 | $$self.$$.dirty[1] & /*$v2expandedTags, trailKey*/
-    768) {
+    16 | $$self.$$.dirty[1] & /*$v2expandedTags, trailKey*/
+    786432) {
       $:
-        $$invalidate(22, collapsed = !isRoot && !$v2expandedTags.has(trailKey));
+        $$invalidate(25, collapsed = !isRoot && !$v2expandedTags.has(trailKey));
     }
-    if ($$self.$$.dirty[0] & /*_setting, _tagInfo*/
-    805306368) {
+    if ($$self.$$.dirty[0] & /*viewType*/
+    4 | $$self.$$.dirty[1] & /*_setting, _tagInfo*/
+    40) {
       $:
-        $$invalidate(37, sortFunc = selectCompareMethodTags(_setting, _tagInfo));
+        $$invalidate(47, sortFunc = selectCompareMethodTags(_setting, viewType == "links" ? {} : _tagInfo));
     }
     if ($$self.$$.dirty[0] & /*trail*/
-    4) {
+    8) {
       $:
-        $$invalidate(38, trailLower = trail.map((e) => e.toLocaleLowerCase()));
+        $$invalidate(48, trailLower = trail.map((e) => e.toLocaleLowerCase()));
     }
     if ($$self.$$.dirty[0] & /*items, _items*/
-    12288) {
+    24576) {
       $: {
         if (JSON.stringify(items) !== JSON.stringify(_items)) {
-          $$invalidate(13, _items = items);
+          $$invalidate(14, _items = items);
         }
       }
     }
-    if ($$self.$$.dirty[0] & /*tagName, tagNameDisp, thisName, _tagInfo*/
-    671088643) {
+    if ($$self.$$.dirty[0] & /*viewType*/
+    4 | $$self.$$.dirty[1] & /*thisName, thisInfo, _a*/
+    16387) {
+      $: {
+        $$invalidate(44, thisLinks = []);
+        $$invalidate(45, thisInfo = void 0);
+        if (viewType == "links") {
+          $$invalidate(45, thisInfo = getViewItemFromPath(thisName));
+          $$invalidate(44, thisLinks = ($$invalidate(32, _a = thisInfo === null || thisInfo === void 0 ? void 0 : thisInfo.links) !== null && _a !== void 0 ? _a : []).map((e) => `${e}`));
+        }
+      }
+    }
+    if ($$self.$$.dirty[0] & /*tagName, tagNameDisp*/
+    3 | $$self.$$.dirty[1] & /*thisName, _tagInfo*/
+    33) {
       $: {
         if (tagName == "" && tagNameDisp.length == 0) {
           const [wTagName, wTagNameDisp] = parseTagName(thisName, _tagInfo);
@@ -3769,219 +3913,251 @@ function instance5($$self, $$props, $$invalidate) {
         }
       }
     }
-    if ($$self.$$.dirty[0] & /*_items, trail, isMainTree, _setting, depth, isInDedicatedTag, thisName, tagName*/
-    402677813 | $$self.$$.dirty[1] & /*previousTrail, isSuppressibleLevel, trailLower*/
-    134) {
+    if ($$self.$$.dirty[0] & /*_items, trail, isMainTree, depth, viewType, isRoot, isInDedicatedTag, tagName*/
+    49277 | $$self.$$.dirty[1] & /*expandLimit, thisLinks, _setting, thisInfo, thisName, tags, leftOverItems, previousTrail, isSuppressibleLevel, trailLower*/
+    158617) {
       $: {
-        $$invalidate(14, isInDedicatedTag = false);
+        linkedItems.clear();
+        $$invalidate(15, isInDedicatedTag = false);
         let isMixedDedicatedTag = false;
         if (_items) {
-          $$invalidate(31, tags = []);
-          $$invalidate(32, previousTrail = "");
+          $$invalidate(38, tags = []);
+          $$invalidate(39, previousTrail = "");
           if (trail.length >= 1 && trail[trail.length - 1].endsWith("/")) {
-            $$invalidate(32, previousTrail = trail[trail.length - 1]);
-            $$invalidate(14, isInDedicatedTag = true);
+            $$invalidate(39, previousTrail = trail[trail.length - 1]);
+            $$invalidate(15, isInDedicatedTag = true);
             isMixedDedicatedTag = true;
           }
-          if (isMainTree && (!(_setting === null || _setting === void 0 ? void 0 : _setting.expandLimit) || (_setting === null || _setting === void 0 ? void 0 : _setting.expandLimit) && depth < _setting.expandLimit)) {
-            $$invalidate(33, isSuppressibleLevel = false);
-            const tagsAll = uniqueCaseIntensive(_items.flatMap((e) => [...e.tags]));
-            const lastTrailTagLC = trimTrailingSlash(previousTrail).toLocaleLowerCase();
-            if (isInDedicatedTag && tagsAll.some((e) => e.toLocaleLowerCase() == lastTrailTagLC)) {
-              $$invalidate(14, isInDedicatedTag = false);
-            }
-            let existTags = [...tagsAll];
-            existTags = existTags.filter((tag) => trail.every((trail2) => trimTrailingSlash(tag.toLocaleLowerCase()) !== trimTrailingSlash(trail2.toLocaleLowerCase())));
-            existTags = existTags.filter((tag) => tag.toLocaleLowerCase() != thisName.toLocaleLowerCase() && tag.toLocaleLowerCase() != tagName.toLocaleLowerCase());
-            existTags = existTags.filter((tag) => !tag.toLocaleLowerCase().endsWith("/" + trimSlash(thisName).toLocaleLowerCase()));
-            let escapedPreviousTrail = previousTrail;
-            if (isInDedicatedTag) {
-              existTags = existTags.filter((e) => (e + "/").startsWith(previousTrail));
-            }
-            if (isMixedDedicatedTag) {
-              escapedPreviousTrail = previousTrail.split("/").join("*");
-              existTags = existTags.map((e) => (e + "/").startsWith(previousTrail) ? escapedPreviousTrail + e.substring(previousTrail.length) : e);
-            }
-            let existTagsFiltered1 = [];
-            if (!_setting.doNotSimplifyTags) {
-              if (_items.length == 1) {
-                existTagsFiltered1 = existTags;
-                $$invalidate(33, isSuppressibleLevel = true);
+          if (isMainTree && (!expandLimit || expandLimit && depth < expandLimit)) {
+            $$invalidate(40, isSuppressibleLevel = false);
+            isMixedDedicatedTag = false;
+            let tagsAll = uniqueCaseIntensive(_items.flatMap((e) => [...e.tags]));
+            if (viewType == "links") {
+              tagsAll = unique(_items.flatMap((e) => [...e.links]));
+              if (!isRoot) {
+                tagsAll = thisLinks;
+                if (!_setting.linkShowOnlyFDR) {
+                  tagsAll = thisInfo ? getAllLinksRecursive(thisInfo, [...trail]) : thisLinks;
+                }
+              }
+              if (!isRoot || _setting.expandUntaggedToRoot) {
+                tagsAll = tagsAll.filter((e) => e != "_unlinked");
+              }
+              tagsAll = tagsAll.filter((e) => !trail.contains(e));
+              for (const tag of tagsAll) {
+                if (tag == "_unlinked") {
+                  linkedItems.set(tag, _items.filter((e) => e.links.contains(tag)));
+                } else {
+                  const wItems = _items.filter((e) => e.path == tag);
+                  linkedItems.set(tag, wItems);
+                }
+              }
+              $$invalidate(38, tags = []);
+              $$invalidate(42, leftOverItems = []);
+              if (thisName == "_unlinked") {
+                $$invalidate(42, leftOverItems = _items);
               } else {
-                const allChildTags = uniqueCaseIntensive(_items.map((e) => e.tags.sort().join("**")));
-                if (allChildTags.length == 1) {
-                  $$invalidate(33, isSuppressibleLevel = true);
-                  existTagsFiltered1 = existTags;
-                }
-              }
-            }
-            if (!isSuppressibleLevel) {
-              const removeItems = [thisName.toLocaleLowerCase()];
-              if (_setting.reduceNestedParent) {
-                removeItems.push(...trailLower);
-              }
-              const tagsOnNextLevel = uniqueCaseIntensive(existTags.map((e) => {
-                const idx = e.indexOf("/");
-                if (idx < 1)
-                  return e;
-                let piece = e.substring(0, idx + 1);
-                let idx2 = idx;
-                while (removeItems.contains(piece.toLocaleLowerCase())) {
-                  idx2 = e.indexOf("/", idx2 + 1);
-                  if (idx2 === -1) {
-                    piece = e;
-                    break;
+                tagsAll.forEach((tag) => {
+                  if (tag == "_unlinked") {
+                    tags.push(tag);
+                    return;
                   }
-                  piece = e.substring(0, idx2 + 1);
-                }
-                return piece;
-              }));
-              const trailShortest = removeIntermediatePath(trail);
-              existTagsFiltered1 = tagsOnNextLevel.filter((tag) => (
-                // Remove tags which in trail again.
-                trailShortest.every((trail2) => trimTrailingSlash(tag.toLocaleLowerCase()) !== trimTrailingSlash(trail2.toLocaleLowerCase()))
-              ));
-            }
-            if (isMixedDedicatedTag) {
-              existTagsFiltered1 = existTagsFiltered1.map((e) => e.replace(escapedPreviousTrail, previousTrail));
-            }
-            const existTagsFiltered1LC = existTagsFiltered1.map((e) => e.toLocaleLowerCase());
-            const existTagsFiltered2 = existTagsFiltered1.map((e) => existTagsFiltered1LC.contains(e.toLocaleLowerCase() + "/") ? e + "/" : e);
-            const existTagsFiltered3 = uniqueCaseIntensive(existTagsFiltered2);
-            if (previousTrail.endsWith("/")) {
-              const existTagsFiltered4 = [];
-              for (const tag of existTagsFiltered3) {
-                if (!existTagsFiltered3.map((e) => e.toLocaleLowerCase()).contains((previousTrail + tag).toLocaleLowerCase())) {
-                  existTagsFiltered4.push(tag);
+                  const x = getViewItemFromPath(tag);
+                  if (x == void 0)
+                    return false;
+                  const existLinks = x.links.filter((e) => !trail.contains(e) && e != thisName);
+                  const nextDepth = !expandLimit || expandLimit && depth + 1 < expandLimit;
+                  if (existLinks.length >= 2 && nextDepth) {
+                    tags.push(tag);
+                  } else {
+                    leftOverItems.push(x);
+                  }
+                });
+              }
+            } else {
+              const lastTrailTagLC = trimTrailingSlash(previousTrail).toLocaleLowerCase();
+              if (isInDedicatedTag && tagsAll.some((e) => e.toLocaleLowerCase() == lastTrailTagLC)) {
+                $$invalidate(15, isInDedicatedTag = false);
+              }
+              let existTags = [...tagsAll];
+              existTags = existTags.filter((tag) => trail.every((trail2) => trimTrailingSlash(tag.toLocaleLowerCase()) !== trimTrailingSlash(trail2.toLocaleLowerCase())));
+              existTags = existTags.filter((tag) => tag.toLocaleLowerCase() != thisName.toLocaleLowerCase() && tag.toLocaleLowerCase() != tagName.toLocaleLowerCase());
+              existTags = existTags.filter((tag) => !tag.toLocaleLowerCase().endsWith("/" + trimSlash(thisName).toLocaleLowerCase()));
+              let escapedPreviousTrail = previousTrail;
+              if (isInDedicatedTag) {
+                existTags = existTags.filter((e) => (e + "/").startsWith(previousTrail));
+              }
+              if (isMixedDedicatedTag) {
+                escapedPreviousTrail = previousTrail.split("/").join("*");
+                existTags = existTags.map((e) => (e + "/").startsWith(previousTrail) ? escapedPreviousTrail + e.substring(previousTrail.length) : e);
+              }
+              let existTagsFiltered1 = [];
+              if (!_setting.doNotSimplifyTags) {
+                if (_items.length == 1) {
+                  existTagsFiltered1 = existTags;
+                  $$invalidate(40, isSuppressibleLevel = true);
+                } else {
+                  const allChildTags = uniqueCaseIntensive(_items.map((e) => e.tags.sort().join("**")));
+                  if (allChildTags.length == 1) {
+                    $$invalidate(40, isSuppressibleLevel = true);
+                    existTagsFiltered1 = existTags;
+                  }
                 }
               }
-              $$invalidate(31, tags = uniqueCaseIntensive(removeIntermediatePath(existTagsFiltered4)));
-            } else {
-              $$invalidate(31, tags = uniqueCaseIntensive(removeIntermediatePath(existTagsFiltered3)));
+              if (!isSuppressibleLevel) {
+                const removeItems = [thisName.toLocaleLowerCase()];
+                if (_setting.reduceNestedParent) {
+                  removeItems.push(...trailLower);
+                }
+                let tagsOnNextLevel = [];
+                if (viewType == "tags") {
+                  tagsOnNextLevel = uniqueCaseIntensive(existTags.map((e) => {
+                    const idx = e.indexOf("/");
+                    if (idx < 1)
+                      return e;
+                    let piece = e.substring(0, idx + 1);
+                    let idx2 = idx;
+                    while (removeItems.contains(piece.toLocaleLowerCase())) {
+                      idx2 = e.indexOf("/", idx2 + 1);
+                      if (idx2 === -1) {
+                        piece = e;
+                        break;
+                      }
+                      piece = e.substring(0, idx2 + 1);
+                    }
+                    return piece;
+                  }));
+                } else {
+                  tagsOnNextLevel = unique(existTags);
+                }
+                const trailShortest = removeIntermediatePath(trail);
+                existTagsFiltered1 = tagsOnNextLevel.filter((tag) => (
+                  // Remove tags which in trail again.
+                  trailShortest.every((trail2) => trimTrailingSlash(tag.toLocaleLowerCase()) !== trimTrailingSlash(trail2.toLocaleLowerCase()))
+                ));
+              }
+              if (isMixedDedicatedTag) {
+                existTagsFiltered1 = existTagsFiltered1.map((e) => e.replace(escapedPreviousTrail, previousTrail));
+              }
+              const existTagsFiltered1LC = existTagsFiltered1.map((e) => e.toLocaleLowerCase());
+              const existTagsFiltered2 = existTagsFiltered1.map((e) => existTagsFiltered1LC.contains(e.toLocaleLowerCase() + "/") ? e + "/" : e);
+              const existTagsFiltered3 = uniqueCaseIntensive(existTagsFiltered2);
+              if (previousTrail.endsWith("/")) {
+                const existTagsFiltered4 = [];
+                for (const tag of existTagsFiltered3) {
+                  if (!existTagsFiltered3.map((e) => e.toLocaleLowerCase()).contains((previousTrail + tag).toLocaleLowerCase())) {
+                    existTagsFiltered4.push(tag);
+                  }
+                }
+                $$invalidate(38, tags = uniqueCaseIntensive(removeIntermediatePath(existTagsFiltered4)));
+              } else {
+                $$invalidate(38, tags = uniqueCaseIntensive(removeIntermediatePath(existTagsFiltered3)));
+              }
             }
           }
         }
       }
     }
-    if ($$self.$$.dirty[0] & /*_setting, depth, isMainTree, _tagInfo, _items, isRoot*/
-    805314616 | $$self.$$.dirty[1] & /*tags, trailLower, isSuppressibleLevel, previousTrail, sortFunc*/
-    199) {
+    if ($$self.$$.dirty[0] & /*depth, isMainTree, viewType, _items, isRoot*/
+    16500 | $$self.$$.dirty[1] & /*expandLimit, tags, trailLower, _setting, isSuppressibleLevel, previousTrail, _tagInfo, sortFunc*/
+    197560) {
       $: {
-        $$invalidate(15, suppressLevels = []);
-        if ((_setting === null || _setting === void 0 ? void 0 : _setting.expandLimit) && depth >= _setting.expandLimit) {
-          $$invalidate(34, children2 = []);
-          $$invalidate(15, suppressLevels = getExtraTags(tags, trailLower, _setting.reduceNestedParent));
+        $$invalidate(16, suppressLevels = []);
+        if (expandLimit && depth >= expandLimit) {
+          $$invalidate(41, children2 = []);
+          $$invalidate(16, suppressLevels = getExtraTags(tags, trailLower, _setting.reduceNestedParent));
         } else if (!isMainTree) {
-          $$invalidate(34, children2 = []);
+          $$invalidate(41, children2 = []);
         } else if (isSuppressibleLevel) {
-          $$invalidate(34, children2 = []);
-          $$invalidate(15, suppressLevels = getExtraTags(tags, trailLower, _setting.reduceNestedParent));
+          $$invalidate(41, children2 = []);
+          $$invalidate(16, suppressLevels = getExtraTags(tags, trailLower, _setting.reduceNestedParent));
         } else {
-          const previousTrailLC = previousTrail.toLocaleLowerCase();
-          let wChildren = tags.map((tag) => {
-            const tagLC = tag.toLocaleLowerCase();
-            const tagNestedLC = trimPrefix(tagLC, previousTrailLC);
-            return [
-              tag,
-              ...parseTagName(tag, _tagInfo),
-              _items.filter((item) => item.tags.some((itemTag) => {
-                const itemTagLC = itemTag.toLocaleLowerCase();
-                return pathMatch(itemTagLC, tagLC) || // Exact matched item
-                // `b` should be contained in `a/b` under `a/`, if the level is mixed level.
-                pathMatch(itemTagLC, tagNestedLC);
-              }))
-            ];
-          }).filter((child) => child[V2FI_IDX_CHILDREN].length != 0);
-          if (_setting.mergeRedundantCombination) {
-            let out = [];
-            const isShown = /* @__PURE__ */ new Set();
-            for (const [tag, tagName2, tagsDisp2, items2] of wChildren) {
-              const list = [];
-              for (const v of items2) {
-                if (!isShown.has(v.path)) {
-                  list.push(v);
-                  isShown.add(v.path);
-                }
-              }
-              if (list.length != 0)
-                out.push([tag, tagName2, tagsDisp2, list]);
-            }
-            wChildren = out;
+          let wChildren = [];
+          if (viewType == "tags") {
+            const previousTrailLC = previousTrail.toLocaleLowerCase();
+            wChildren = tags.map((tag) => {
+              const tagLC = tag.toLocaleLowerCase();
+              const tagNestedLC = trimPrefix(tagLC, previousTrailLC);
+              return [
+                tag,
+                ...parseTagName(tag, _tagInfo),
+                _items.filter((item) => item.tags.some((itemTag) => {
+                  const itemTagLC = itemTag.toLocaleLowerCase();
+                  return pathMatch(itemTagLC, tagLC) || // Exact matched item
+                  // `b` should be contained in `a/b` under `a/`, if the level is mixed level.
+                  pathMatch(itemTagLC, tagNestedLC);
+                }))
+              ];
+            }).filter((child) => child[V2FI_IDX_CHILDREN].length != 0);
+          } else if (viewType == "links") {
+            wChildren = tags.map((tag) => {
+              var _a2;
+              const selfInfo = getViewItemFromPath(tag);
+              const dispName = !selfInfo ? tag : selfInfo.displayName;
+              const children3 = (_a2 = linkedItems.get(tag)) !== null && _a2 !== void 0 ? _a2 : [];
+              return [tag, dispName, [dispName], children3];
+            });
           }
-          if (isMainTree && isRoot) {
-            const archiveTags = _setting.archiveTags.toLocaleLowerCase().replace(/[\n ]/g, "").split(",");
-            wChildren = wChildren.map((e) => archiveTags.some((aTag) => `${aTag}//`.startsWith(e[V2FI_IDX_TAG].toLocaleLowerCase() + "/")) ? e : [
-              e[V2FI_IDX_TAG],
-              e[V2FI_IDX_TAGNAME],
-              e[V2FI_IDX_TAGDISP],
-              e[V2FI_IDX_CHILDREN].filter((items2) => !items2.tags.some((e2) => archiveTags.contains(e2.toLocaleLowerCase())))
-            ]).filter((child) => child[V2FI_IDX_CHILDREN].length != 0);
+          if (viewType == "tags") {
+            if (_setting.mergeRedundantCombination) {
+              let out = [];
+              const isShown = /* @__PURE__ */ new Set();
+              for (const [tag, tagName2, tagsDisp2, items2] of wChildren) {
+                const list = [];
+                for (const v of items2) {
+                  if (!isShown.has(v.path)) {
+                    list.push(v);
+                    isShown.add(v.path);
+                  }
+                }
+                if (list.length != 0)
+                  out.push([tag, tagName2, tagsDisp2, list]);
+              }
+              wChildren = out;
+            }
+            if (isMainTree && isRoot) {
+              const archiveTags = _setting.archiveTags.toLocaleLowerCase().replace(/[\n ]/g, "").split(",");
+              wChildren = wChildren.map((e) => archiveTags.some((aTag) => `${aTag}//`.startsWith(e[V2FI_IDX_TAG].toLocaleLowerCase() + "/")) ? e : [
+                e[V2FI_IDX_TAG],
+                e[V2FI_IDX_TAGNAME],
+                e[V2FI_IDX_TAGDISP],
+                e[V2FI_IDX_CHILDREN].filter((items2) => !items2.tags.some((e2) => archiveTags.contains(e2.toLocaleLowerCase())))
+              ]).filter((child) => child[V2FI_IDX_CHILDREN].length != 0);
+            }
           }
           wChildren = wChildren.sort(sortFunc);
-          $$invalidate(34, children2 = wChildren);
+          $$invalidate(41, children2 = wChildren);
         }
       }
     }
-    if ($$self.$$.dirty[0] & /*_items, _currentActiveFilePath*/
-    1073750016) {
-      $:
-        $$invalidate(21, isActive = _items && _items.some((e) => e.path == _currentActiveFilePath));
-    }
-    if ($$self.$$.dirty[0] & /*isInDedicatedTag, tagNameDisp, suppressLevels*/
-    49154 | $$self.$$.dirty[1] & /*isSuppressibleLevel*/
-    4) {
-      $: {
-        if (isSuppressibleLevel && isInDedicatedTag) {
-          $$invalidate(36, tagsDisp = [
-            [
-              ...tagNameDisp,
-              ...suppressLevels.flatMap((e) => e.split("/").map((e2) => renderSpecialTag(e2)))
-            ]
-          ]);
-        } else if (isSuppressibleLevel) {
-          $$invalidate(36, tagsDisp = [
-            tagNameDisp,
-            ...suppressLevels.map((e) => e.split("/").map((e2) => renderSpecialTag(e2)))
-          ]);
-        } else {
-          $$invalidate(36, tagsDisp = [tagNameDisp]);
-        }
-      }
-    }
-    if ($$self.$$.dirty[0] & /*isFolderVisible*/
-    65536 | $$self.$$.dirty[1] & /*tagsDisp*/
-    32) {
-      $:
-        $$invalidate(20, tagsDispHtml = isFolderVisible ? tagsDisp.map((e) => `<span class="tagfolder-tag tag-tag">${e.map((ee) => `<span class="tf-tag-each">${escapeStringToHTML(ee)}</span>`).join("")}</span>`).join("") : "");
-    }
-    if ($$self.$$.dirty[0] & /*_setting, isMainTree, isRoot, _items, isInDedicatedTag*/
-    268460056 | $$self.$$.dirty[1] & /*isSuppressibleLevel, children, leftOverItems*/
-    28) {
+    if ($$self.$$.dirty[0] & /*isMainTree, isRoot, _items, viewType, isInDedicatedTag*/
+    49204 | $$self.$$.dirty[1] & /*_setting, isSuppressibleLevel, children, leftOverItems*/
+    3592) {
       $: {
         if (_setting.useMultiPaneList && isMainTree) {
-          $$invalidate(35, leftOverItems = []);
+          $$invalidate(42, leftOverItems = []);
         } else {
           if (isRoot && isMainTree && !isSuppressibleLevel) {
             if (_setting.expandUntaggedToRoot) {
-              $$invalidate(35, leftOverItems = _items.filter((e) => e.tags.contains("_untagged")));
+              $$invalidate(42, leftOverItems = _items.filter((e) => e.tags.contains("_untagged") || e.tags.contains("_unlinked")));
             } else {
-              $$invalidate(35, leftOverItems = []);
+              $$invalidate(42, leftOverItems = []);
             }
           } else if (isRoot && !isMainTree) {
-            $$invalidate(35, leftOverItems = _items);
-          } else {
+            $$invalidate(42, leftOverItems = _items);
+          } else if (viewType == "tags") {
             if (_setting.hideItems == "NONE") {
-              $$invalidate(35, leftOverItems = _items);
+              $$invalidate(42, leftOverItems = _items);
             } else if (_setting.hideItems == "DEDICATED_INTERMIDIATES" && isInDedicatedTag || _setting.hideItems == "ALL_EXCEPT_BOTTOM") {
-              $$invalidate(35, leftOverItems = _items.filter((e) => !children2.map((e2) => e2[V2FI_IDX_CHILDREN]).flat().find((ee) => e.path == ee.path)));
+              $$invalidate(42, leftOverItems = _items.filter((e) => !children2.map((e2) => e2[V2FI_IDX_CHILDREN]).flat().find((ee) => e.path == ee.path)));
             } else {
-              $$invalidate(35, leftOverItems = _items);
+              $$invalidate(42, leftOverItems = _items);
             }
           }
         }
         if (_setting.sortExactFirst) {
           const exactHereItems = _items.filter((e) => !children2.map((e2) => e2[V2FI_IDX_CHILDREN]).flat().find((ee) => e.path == ee.path));
-          $$invalidate(35, leftOverItems = [...leftOverItems].sort((a, b) => {
+          $$invalidate(42, leftOverItems = [...leftOverItems].sort((a, b) => {
             const aIsInChildren = exactHereItems.some((e) => e.path == a.path);
             const bIsInChildren = exactHereItems.some((e) => e.path == b.path);
             return (aIsInChildren ? -1 : 0) + (bIsInChildren ? 1 : 0);
@@ -3989,27 +4165,72 @@ function instance5($$self, $$props, $$invalidate) {
         }
       }
     }
+    if ($$self.$$.dirty[0] & /*_items, viewType*/
+    16388 | $$self.$$.dirty[1] & /*_currentActiveFilePath, thisName, tags, leftOverItems*/
+    2241) {
+      $:
+        $$invalidate(24, isActive = _items && _items.some((e) => e.path == _currentActiveFilePath) || viewType == "links" && (thisName == _currentActiveFilePath || tags.contains(_currentActiveFilePath) || leftOverItems.some((e) => e.path == _currentActiveFilePath)));
+    }
+    if ($$self.$$.dirty[0] & /*isInDedicatedTag, tagNameDisp, suppressLevels*/
+    98306 | $$self.$$.dirty[1] & /*isSuppressibleLevel*/
+    512) {
+      $: {
+        if (isSuppressibleLevel && isInDedicatedTag) {
+          $$invalidate(43, tagsDisp = [
+            [
+              ...tagNameDisp,
+              ...suppressLevels.flatMap((e) => e.split("/").map((e2) => renderSpecialTag(e2)))
+            ]
+          ]);
+        } else if (isSuppressibleLevel) {
+          $$invalidate(43, tagsDisp = [
+            tagNameDisp,
+            ...suppressLevels.map((e) => e.split("/").map((e2) => renderSpecialTag(e2)))
+          ]);
+        } else {
+          $$invalidate(43, tagsDisp = [tagNameDisp]);
+        }
+      }
+    }
+    if ($$self.$$.dirty[0] & /*viewType*/
+    4) {
+      $:
+        $$invalidate(46, classKey = viewType == "links" ? " tf-link" : " tf-tag");
+    }
+    if ($$self.$$.dirty[0] & /*isFolderVisible*/
+    131072 | $$self.$$.dirty[1] & /*tagsDisp, classKey*/
+    36864) {
+      $:
+        $$invalidate(23, tagsDispHtml = isFolderVisible ? tagsDisp.map((e) => `<span class="tagfolder-tag tag-tag${classKey}">${e.map((ee) => `<span class="tf-tag-each">${escapeStringToHTML(ee)}</span>`).join("")}</span>`).join("") : "");
+    }
+    if ($$self.$$.dirty[0] & /*viewType, _items*/
+    16388 | $$self.$$.dirty[1] & /*_b, tags, leftOverItems*/
+    2180) {
+      $:
+        $$invalidate(22, itemCount = viewType == "tags" ? $$invalidate(33, _b = _items === null || _items === void 0 ? void 0 : _items.length) !== null && _b !== void 0 ? _b : 0 : tags.length + leftOverItems.length);
+    }
     if ($$self.$$.dirty[1] & /*leftOverItems*/
-    16) {
+    2048) {
       $: {
         applyLeftOverItems(leftOverItems);
       }
     }
     if ($$self.$$.dirty[1] & /*children*/
-    8) {
+    1024) {
       $: {
         applyChildren(children2);
       }
     }
-    if ($$self.$$.dirty[0] & /*_setting*/
-    268435456) {
+    if ($$self.$$.dirty[1] & /*_setting*/
+    8) {
       $:
-        $$invalidate(19, draggable = !_setting.disableDragging);
+        $$invalidate(21, draggable = !_setting.disableDragging);
     }
   };
   return [
     tagName,
     tagNameDisp,
+    viewType,
     trail,
     isRoot,
     isMainTree,
@@ -4027,7 +4248,9 @@ function instance5($$self, $$props, $$invalidate) {
     isFolderVisible,
     childrenDisp,
     leftOverItemsDisp,
+    filename,
     draggable,
+    itemCount,
     tagsDispHtml,
     isActive,
     collapsed,
@@ -4035,8 +4258,12 @@ function instance5($$self, $$props, $$invalidate) {
     toggleFolder,
     dragStartFiles,
     dragStartName,
+    handleOpenItem,
     thisName,
+    _a,
+    _b,
     _setting,
+    expandLimit,
     _tagInfo,
     _currentActiveFilePath,
     tags,
@@ -4045,6 +4272,9 @@ function instance5($$self, $$props, $$invalidate) {
     children2,
     leftOverItems,
     tagsDisp,
+    thisLinks,
+    thisInfo,
+    classKey,
     sortFunc,
     trailLower,
     trailKey,
@@ -4064,20 +4294,21 @@ var V2TreeFolderComponent = class extends SvelteComponent {
       create_fragment5,
       safe_not_equal,
       {
-        thisName: 27,
-        items: 12,
+        viewType: 2,
+        thisName: 31,
+        items: 13,
         tagName: 0,
         tagNameDisp: 1,
-        trail: 2,
-        isRoot: 3,
-        isMainTree: 4,
-        depth: 5,
-        folderIcon: 6,
-        headerTitle: 7,
-        showMenu: 8,
-        openFile: 9,
-        hoverPreview: 10,
-        openScrollView: 11
+        trail: 3,
+        isRoot: 4,
+        isMainTree: 5,
+        depth: 6,
+        folderIcon: 7,
+        headerTitle: 8,
+        showMenu: 9,
+        openFile: 10,
+        hoverPreview: 11,
+        openScrollView: 12
       },
       null,
       [-1, -1, -1]
@@ -4091,7 +4322,7 @@ var import_obsidian3 = require("obsidian");
 function add_css3(target) {
   append_styles(target, "svelte-1xm87ro", ".nav-files-container.svelte-1xm87ro{height:100%}");
 }
-function create_if_block_22(ctx) {
+function create_if_block_32(ctx) {
   let div0;
   let t0;
   let div1;
@@ -4112,21 +4343,21 @@ function create_if_block_22(ctx) {
       attr(div1, "class", "clickable-icon nav-action-button");
       attr(div1, "aria-label", "Expand limit");
       attr(div2, "class", div2_class_value = null_to_empty("clickable-icon nav-action-button" + /*showSearch*/
-      (ctx[10] ? " is-active" : "")) + " svelte-1xm87ro");
+      (ctx[14] ? " is-active" : "")) + " svelte-1xm87ro");
       attr(div2, "aria-label", "Search");
     },
     m(target, anchor) {
       insert(target, div0, anchor);
       div0.innerHTML = /*upAndDownArrowsIcon*/
-      ctx[14];
+      ctx[18];
       insert(target, t0, anchor);
       insert(target, div1, anchor);
       div1.innerHTML = /*stackedLevels*/
-      ctx[15];
+      ctx[19];
       insert(target, t1, anchor);
       insert(target, div2, anchor);
       div2.innerHTML = /*searchIcon*/
-      ctx[16];
+      ctx[20];
       if (!mounted) {
         dispose = [
           listen(div0, "click", function() {
@@ -4147,7 +4378,7 @@ function create_if_block_22(ctx) {
             div2,
             "click",
             /*toggleSearch*/
-            ctx[21]
+            ctx[28]
           )
         ];
         mounted = true;
@@ -4156,23 +4387,23 @@ function create_if_block_22(ctx) {
     p(new_ctx, dirty) {
       ctx = new_ctx;
       if (dirty[0] & /*upAndDownArrowsIcon*/
-      16384)
+      262144)
         div0.innerHTML = /*upAndDownArrowsIcon*/
-        ctx[14];
+        ctx[18];
       ;
       if (dirty[0] & /*stackedLevels*/
-      32768)
+      524288)
         div1.innerHTML = /*stackedLevels*/
-        ctx[15];
+        ctx[19];
       ;
       if (dirty[0] & /*searchIcon*/
-      65536)
+      1048576)
         div2.innerHTML = /*searchIcon*/
-        ctx[16];
+        ctx[20];
       ;
       if (dirty[0] & /*showSearch*/
-      1024 && div2_class_value !== (div2_class_value = null_to_empty("clickable-icon nav-action-button" + /*showSearch*/
-      (ctx[10] ? " is-active" : "")) + " svelte-1xm87ro")) {
+      16384 && div2_class_value !== (div2_class_value = null_to_empty("clickable-icon nav-action-button" + /*showSearch*/
+      (ctx[14] ? " is-active" : "")) + " svelte-1xm87ro")) {
         attr(div2, "class", div2_class_value);
       }
     },
@@ -4189,7 +4420,7 @@ function create_if_block_22(ctx) {
     }
   };
 }
-function create_if_block_12(ctx) {
+function create_if_block_22(ctx) {
   let div;
   let mounted;
   let dispose;
@@ -4202,22 +4433,22 @@ function create_if_block_12(ctx) {
     m(target, anchor) {
       insert(target, div, anchor);
       div.innerHTML = /*switchIcon*/
-      ctx[17];
+      ctx[21];
       if (!mounted) {
         dispose = listen(
           div,
           "click",
           /*doSwitch*/
-          ctx[23]
+          ctx[30]
         );
         mounted = true;
       }
     },
     p(ctx2, dirty) {
       if (dirty[0] & /*switchIcon*/
-      131072)
+      2097152)
         div.innerHTML = /*switchIcon*/
-        ctx2[17];
+        ctx2[21];
       ;
     },
     d(detaching) {
@@ -4226,6 +4457,139 @@ function create_if_block_12(ctx) {
       }
       mounted = false;
       dispose();
+    }
+  };
+}
+function create_if_block_12(ctx) {
+  let div0;
+  let t0;
+  let div1;
+  let t1;
+  let div2;
+  let mounted;
+  let dispose;
+  return {
+    c() {
+      div0 = element("div");
+      t0 = space();
+      div1 = element("div");
+      t1 = space();
+      div2 = element("div");
+      attr(div0, "class", "clickable-icon nav-action-button");
+      attr(div0, "aria-label", "Toggle Incoming");
+      toggle_class(
+        div0,
+        "is-active",
+        /*incomingEnabled*/
+        ctx[12]
+      );
+      attr(div1, "class", "clickable-icon nav-action-button");
+      attr(div1, "aria-label", "Toggle Outgoing");
+      toggle_class(
+        div1,
+        "is-active",
+        /*outgoingEnabled*/
+        ctx[11]
+      );
+      attr(div2, "class", "clickable-icon nav-action-button");
+      attr(div2, "aria-label", "Toggle Hide indirect notes");
+      toggle_class(
+        div2,
+        "is-active",
+        /*onlyFDREnabled*/
+        ctx[13]
+      );
+    },
+    m(target, anchor) {
+      insert(target, div0, anchor);
+      div0.innerHTML = /*incomingIcon*/
+      ctx[23];
+      insert(target, t0, anchor);
+      insert(target, div1, anchor);
+      div1.innerHTML = /*outgoingIcon*/
+      ctx[22];
+      insert(target, t1, anchor);
+      insert(target, div2, anchor);
+      div2.innerHTML = /*linkIcon*/
+      ctx[24];
+      if (!mounted) {
+        dispose = [
+          listen(
+            div0,
+            "click",
+            /*switchIncoming*/
+            ctx[31]
+          ),
+          listen(
+            div1,
+            "click",
+            /*switchOutgoing*/
+            ctx[32]
+          ),
+          listen(
+            div2,
+            "click",
+            /*switchOnlyFDR*/
+            ctx[33]
+          )
+        ];
+        mounted = true;
+      }
+    },
+    p(ctx2, dirty) {
+      if (dirty[0] & /*incomingIcon*/
+      8388608)
+        div0.innerHTML = /*incomingIcon*/
+        ctx2[23];
+      ;
+      if (dirty[0] & /*incomingEnabled*/
+      4096) {
+        toggle_class(
+          div0,
+          "is-active",
+          /*incomingEnabled*/
+          ctx2[12]
+        );
+      }
+      if (dirty[0] & /*outgoingIcon*/
+      4194304)
+        div1.innerHTML = /*outgoingIcon*/
+        ctx2[22];
+      ;
+      if (dirty[0] & /*outgoingEnabled*/
+      2048) {
+        toggle_class(
+          div1,
+          "is-active",
+          /*outgoingEnabled*/
+          ctx2[11]
+        );
+      }
+      if (dirty[0] & /*linkIcon*/
+      16777216)
+        div2.innerHTML = /*linkIcon*/
+        ctx2[24];
+      ;
+      if (dirty[0] & /*onlyFDREnabled*/
+      8192) {
+        toggle_class(
+          div2,
+          "is-active",
+          /*onlyFDREnabled*/
+          ctx2[13]
+        );
+      }
+    },
+    d(detaching) {
+      if (detaching) {
+        detach(div0);
+        detach(t0);
+        detach(div1);
+        detach(t1);
+        detach(div2);
+      }
+      mounted = false;
+      run_all(dispose);
     }
   };
 }
@@ -4251,7 +4615,7 @@ function create_if_block3(ctx) {
         div0,
         "display",
         /*search*/
-        ctx[9].trim() == "" ? "none" : ""
+        ctx[10].trim() == "" ? "none" : ""
       );
       attr(div1, "class", "search-input-container");
     },
@@ -4261,7 +4625,7 @@ function create_if_block3(ctx) {
       set_input_value(
         input,
         /*search*/
-        ctx[9]
+        ctx[10]
       );
       append(div1, t);
       append(div1, div0);
@@ -4271,13 +4635,13 @@ function create_if_block3(ctx) {
             input,
             "input",
             /*input_input_handler*/
-            ctx[32]
+            ctx[43]
           ),
           listen(
             div0,
             "click",
             /*clearSearch*/
-            ctx[22]
+            ctx[29]
           )
         ];
         mounted = true;
@@ -4285,21 +4649,21 @@ function create_if_block3(ctx) {
     },
     p(ctx2, dirty) {
       if (dirty[0] & /*search*/
-      512 && input.value !== /*search*/
-      ctx2[9]) {
+      1024 && input.value !== /*search*/
+      ctx2[10]) {
         set_input_value(
           input,
           /*search*/
-          ctx2[9]
+          ctx2[10]
         );
       }
       if (dirty[0] & /*search*/
-      512) {
+      1024) {
         set_style(
           div0,
           "display",
           /*search*/
-          ctx2[9].trim() == "" ? "none" : ""
+          ctx2[10].trim() == "" ? "none" : ""
         );
       }
     },
@@ -4322,6 +4686,7 @@ function create_fragment6(ctx) {
   let t2;
   let t3;
   let t4;
+  let t5;
   let div4;
   let v2treefoldercomponent;
   let current;
@@ -4329,26 +4694,34 @@ function create_fragment6(ctx) {
   let dispose;
   let if_block0 = (
     /*isMainTree*/
-    ctx[8] && create_if_block_22(ctx)
+    ctx[9] && create_if_block_32(ctx)
   );
   let if_block1 = (
     /*isViewSwitchable*/
-    ctx[7] && create_if_block_12(ctx)
+    ctx[7] && create_if_block_22(ctx)
   );
   let if_block2 = (
+    /*viewType*/
+    ctx[8] == "links" && create_if_block_12(ctx)
+  );
+  let if_block3 = (
     /*showSearch*/
-    ctx[10] && /*isMainTree*/
-    ctx[8] && create_if_block3(ctx)
+    ctx[14] && /*isMainTree*/
+    ctx[9] && create_if_block3(ctx)
   );
   v2treefoldercomponent = new V2TreeFolderComponent_default({
     props: {
+      viewType: (
+        /*viewType*/
+        ctx[8]
+      ),
       items: (
         /*viewItems*/
-        ctx[18]
+        ctx[25]
       ),
       folderIcon: (
         /*folderIcon*/
-        ctx[13]
+        ctx[17]
       ),
       thisName: "",
       isRoot: true,
@@ -4362,7 +4735,7 @@ function create_fragment6(ctx) {
       ),
       isMainTree: (
         /*isMainTree*/
-        ctx[8]
+        ctx[9]
       ),
       hoverPreview: (
         /*hoverPreview*/
@@ -4375,7 +4748,7 @@ function create_fragment6(ctx) {
       depth: 1,
       headerTitle: (
         /*headerTitle*/
-        ctx[20]
+        ctx[27]
       )
     }
   });
@@ -4396,6 +4769,9 @@ function create_fragment6(ctx) {
       if (if_block2)
         if_block2.c();
       t4 = space();
+      if (if_block3)
+        if_block3.c();
+      t5 = space();
       div4 = element("div");
       create_component(v2treefoldercomponent.$$.fragment);
       div0.hidden = true;
@@ -4407,26 +4783,29 @@ function create_fragment6(ctx) {
     },
     m(target, anchor) {
       insert(target, div0, anchor);
-      ctx[31](div0);
+      ctx[42](div0);
       insert(target, t0, anchor);
       insert(target, div3, anchor);
       append(div3, div2);
       append(div2, div1);
       div1.innerHTML = /*newNoteIcon*/
-      ctx[12];
+      ctx[16];
       append(div2, t1);
       if (if_block0)
         if_block0.m(div2, null);
       append(div2, t2);
       if (if_block1)
         if_block1.m(div2, null);
-      insert(target, t3, anchor);
+      append(div2, t3);
       if (if_block2)
-        if_block2.m(target, anchor);
+        if_block2.m(div2, null);
       insert(target, t4, anchor);
+      if (if_block3)
+        if_block3.m(target, anchor);
+      insert(target, t5, anchor);
       insert(target, div4, anchor);
       mount_component(v2treefoldercomponent, div4, null);
-      ctx[33](div4);
+      ctx[44](div4);
       current = true;
       if (!mounted) {
         dispose = listen(div1, "click", function() {
@@ -4442,18 +4821,18 @@ function create_fragment6(ctx) {
     p(new_ctx, dirty) {
       ctx = new_ctx;
       if (!current || dirty[0] & /*newNoteIcon*/
-      4096)
+      65536)
         div1.innerHTML = /*newNoteIcon*/
-        ctx[12];
+        ctx[16];
       ;
       if (
         /*isMainTree*/
-        ctx[8]
+        ctx[9]
       ) {
         if (if_block0) {
           if_block0.p(ctx, dirty);
         } else {
-          if_block0 = create_if_block_22(ctx);
+          if_block0 = create_if_block_32(ctx);
           if_block0.c();
           if_block0.m(div2, t2);
         }
@@ -4468,39 +4847,58 @@ function create_fragment6(ctx) {
         if (if_block1) {
           if_block1.p(ctx, dirty);
         } else {
-          if_block1 = create_if_block_12(ctx);
+          if_block1 = create_if_block_22(ctx);
           if_block1.c();
-          if_block1.m(div2, null);
+          if_block1.m(div2, t3);
         }
       } else if (if_block1) {
         if_block1.d(1);
         if_block1 = null;
       }
       if (
-        /*showSearch*/
-        ctx[10] && /*isMainTree*/
-        ctx[8]
+        /*viewType*/
+        ctx[8] == "links"
       ) {
         if (if_block2) {
           if_block2.p(ctx, dirty);
         } else {
-          if_block2 = create_if_block3(ctx);
+          if_block2 = create_if_block_12(ctx);
           if_block2.c();
-          if_block2.m(t4.parentNode, t4);
+          if_block2.m(div2, null);
         }
       } else if (if_block2) {
         if_block2.d(1);
         if_block2 = null;
       }
+      if (
+        /*showSearch*/
+        ctx[14] && /*isMainTree*/
+        ctx[9]
+      ) {
+        if (if_block3) {
+          if_block3.p(ctx, dirty);
+        } else {
+          if_block3 = create_if_block3(ctx);
+          if_block3.c();
+          if_block3.m(t5.parentNode, t5);
+        }
+      } else if (if_block3) {
+        if_block3.d(1);
+        if_block3 = null;
+      }
       const v2treefoldercomponent_changes = {};
+      if (dirty[0] & /*viewType*/
+      256)
+        v2treefoldercomponent_changes.viewType = /*viewType*/
+        ctx[8];
       if (dirty[0] & /*viewItems*/
-      262144)
+      33554432)
         v2treefoldercomponent_changes.items = /*viewItems*/
-        ctx[18];
+        ctx[25];
       if (dirty[0] & /*folderIcon*/
-      8192)
+      131072)
         v2treefoldercomponent_changes.folderIcon = /*folderIcon*/
-        ctx[13];
+        ctx[17];
       if (dirty[0] & /*showMenu*/
       4)
         v2treefoldercomponent_changes.showMenu = /*showMenu*/
@@ -4510,9 +4908,9 @@ function create_fragment6(ctx) {
         v2treefoldercomponent_changes.openFile = /*openFile*/
         ctx[1];
       if (dirty[0] & /*isMainTree*/
-      256)
+      512)
         v2treefoldercomponent_changes.isMainTree = /*isMainTree*/
-        ctx[8];
+        ctx[9];
       if (dirty[0] & /*hoverPreview*/
       1)
         v2treefoldercomponent_changes.hoverPreview = /*hoverPreview*/
@@ -4522,9 +4920,9 @@ function create_fragment6(ctx) {
         v2treefoldercomponent_changes.openScrollView = /*openScrollView*/
         ctx[6];
       if (dirty[0] & /*headerTitle*/
-      1048576)
+      134217728)
         v2treefoldercomponent_changes.headerTitle = /*headerTitle*/
-        ctx[20];
+        ctx[27];
       v2treefoldercomponent.$set(v2treefoldercomponent_changes);
     },
     i(local) {
@@ -4542,19 +4940,21 @@ function create_fragment6(ctx) {
         detach(div0);
         detach(t0);
         detach(div3);
-        detach(t3);
         detach(t4);
+        detach(t5);
         detach(div4);
       }
-      ctx[31](null);
+      ctx[42](null);
       if (if_block0)
         if_block0.d();
       if (if_block1)
         if_block1.d();
       if (if_block2)
-        if_block2.d(detaching);
+        if_block2.d();
+      if (if_block3)
+        if_block3.d(detaching);
       destroy_component(v2treefoldercomponent);
-      ctx[33](null);
+      ctx[44](null);
       mounted = false;
       dispose();
     }
@@ -4563,13 +4963,14 @@ function create_fragment6(ctx) {
 function instance6($$self, $$props, $$invalidate) {
   let headerTitle;
   let $tagFolderSetting;
-  component_subscribe($$self, tagFolderSetting, ($$value) => $$invalidate(34, $tagFolderSetting = $$value));
+  component_subscribe($$self, tagFolderSetting, ($$value) => $$invalidate(46, $tagFolderSetting = $$value));
   var _a;
   let { hoverPreview } = $$props;
   let { openFile } = $$props;
   let { vaultName = "" } = $$props;
   let { title = "" } = $$props;
   let { tags = [] } = $$props;
+  let { saveSettings } = $$props;
   let { showMenu } = $$props;
   let { showLevelSelect } = $$props;
   let { showOrder } = $$props;
@@ -4577,33 +4978,59 @@ function instance6($$self, $$props, $$invalidate) {
   let { openScrollView } = $$props;
   let { isViewSwitchable } = $$props;
   let { switchView } = $$props;
+  let { viewType = "tags" } = $$props;
   let isMainTree;
   let viewItemsSrc = [];
-  allViewItems.subscribe((items) => {
-    $$invalidate(29, viewItemsSrc = items);
+  let updatedFiles = [];
+  appliedFiles.subscribe(async (filenames) => {
+    updatedFiles = filenames !== null && filenames !== void 0 ? filenames : [];
   });
+  if (viewType == "tags") {
+    allViewItems.subscribe((items) => {
+      $$invalidate(40, viewItemsSrc = items);
+    });
+  } else if (viewType == "links") {
+    allViewItemsByLink.subscribe(async (items) => {
+      if (viewItemsSrc) {
+        const filtered = [
+          ...viewItemsSrc.filter((e) => !updatedFiles.some((filename) => e.links.contains(filename)))
+        ];
+        updatedFiles = [];
+        $$invalidate(40, viewItemsSrc = filtered);
+        await tick();
+      }
+      $$invalidate(40, viewItemsSrc = items);
+    });
+  }
   let search = "";
   searchString.subscribe((newSearch) => {
     if (search != newSearch) {
       if (newSearch != "") {
-        $$invalidate(10, showSearch = true);
+        $$invalidate(14, showSearch = true);
       }
-      $$invalidate(9, search = newSearch);
+      $$invalidate(10, search = newSearch);
     }
   });
   let _setting = $tagFolderSetting;
+  let outgoingEnabled = false;
+  let incomingEnabled = false;
+  let onlyFDREnabled = false;
   tagFolderSetting.subscribe((setting) => {
-    $$invalidate(30, _setting = setting);
+    var _a2, _b, _c, _d, _e, _f;
+    $$invalidate(41, _setting = setting);
+    $$invalidate(11, outgoingEnabled = (_c = (_b = (_a2 = _setting.linkConfig) === null || _a2 === void 0 ? void 0 : _a2.outgoing) === null || _b === void 0 ? void 0 : _b.enabled) !== null && _c !== void 0 ? _c : false);
+    $$invalidate(12, incomingEnabled = (_f = (_e = (_d = _setting.linkConfig) === null || _d === void 0 ? void 0 : _d.incoming) === null || _e === void 0 ? void 0 : _e.enabled) !== null && _f !== void 0 ? _f : false);
+    $$invalidate(13, onlyFDREnabled = _setting.linkShowOnlyFDR);
   });
   let showSearch = false;
   function toggleSearch() {
-    $$invalidate(10, showSearch = !showSearch);
+    $$invalidate(14, showSearch = !showSearch);
     if (!showSearch) {
-      $$invalidate(9, search = "");
+      $$invalidate(10, search = "");
     }
   }
   function clearSearch() {
-    $$invalidate(9, search = "");
+    $$invalidate(10, search = "");
   }
   function doSwitch() {
     if (switchView) {
@@ -4617,21 +5044,50 @@ function instance6($$self, $$props, $$invalidate) {
   let stackedLevels = "";
   let searchIcon = "";
   let switchIcon = "";
+  let outgoingIcon = "";
+  let incomingIcon = "";
+  let linkIcon = "";
+  async function switchIncoming() {
+    let newSet = { ..._setting };
+    newSet.linkConfig.incoming.enabled = !_setting.linkConfig.incoming.enabled;
+    if (saveSettings)
+      await saveSettings(newSet);
+  }
+  async function switchOutgoing() {
+    let newSet = { ..._setting };
+    newSet.linkConfig.outgoing.enabled = !_setting.linkConfig.outgoing.enabled;
+    if (saveSettings)
+      await saveSettings(newSet);
+  }
+  async function switchOnlyFDR() {
+    let newSet = { ..._setting };
+    newSet.linkShowOnlyFDR = !_setting.linkShowOnlyFDR;
+    if (saveSettings)
+      await saveSettings(newSet);
+  }
   onMount(() => {
     (0, import_obsidian3.setIcon)(iconDivEl, "right-triangle");
-    $$invalidate(13, folderIcon = `${iconDivEl.innerHTML}`);
+    $$invalidate(17, folderIcon = `${iconDivEl.innerHTML}`);
     (0, import_obsidian3.setIcon)(iconDivEl, "lucide-edit");
-    $$invalidate(12, newNoteIcon = `${iconDivEl.innerHTML}`);
+    $$invalidate(16, newNoteIcon = `${iconDivEl.innerHTML}`);
     if (isMainTree) {
       (0, import_obsidian3.setIcon)(iconDivEl, "lucide-sort-asc");
-      $$invalidate(14, upAndDownArrowsIcon = iconDivEl.innerHTML);
+      $$invalidate(18, upAndDownArrowsIcon = iconDivEl.innerHTML);
       (0, import_obsidian3.setIcon)(iconDivEl, "stacked-levels");
-      $$invalidate(15, stackedLevels = iconDivEl.innerHTML);
+      $$invalidate(19, stackedLevels = iconDivEl.innerHTML);
       (0, import_obsidian3.setIcon)(iconDivEl, "search");
-      $$invalidate(16, searchIcon = iconDivEl.innerHTML);
+      $$invalidate(20, searchIcon = iconDivEl.innerHTML);
+    }
+    if (viewType == "links") {
+      (0, import_obsidian3.setIcon)(iconDivEl, "links-coming-in");
+      $$invalidate(23, incomingIcon = iconDivEl.innerHTML);
+      (0, import_obsidian3.setIcon)(iconDivEl, "links-going-out");
+      $$invalidate(22, outgoingIcon = iconDivEl.innerHTML);
+      (0, import_obsidian3.setIcon)(iconDivEl, "link");
+      $$invalidate(24, linkIcon = iconDivEl.innerHTML);
     }
     (0, import_obsidian3.setIcon)(iconDivEl, "lucide-arrow-left-right");
-    $$invalidate(17, switchIcon = iconDivEl.innerHTML);
+    $$invalidate(21, switchIcon = iconDivEl.innerHTML);
     const int = setInterval(
       () => {
         performHide.set(Date.now());
@@ -4648,17 +5104,17 @@ function instance6($$self, $$props, $$invalidate) {
   function div0_binding($$value) {
     binding_callbacks[$$value ? "unshift" : "push"](() => {
       iconDivEl = $$value;
-      $$invalidate(11, iconDivEl);
+      $$invalidate(15, iconDivEl);
     });
   }
   function input_input_handler() {
     search = this.value;
-    $$invalidate(9, search);
+    $$invalidate(10, search);
   }
   function div4_binding($$value) {
     binding_callbacks[$$value ? "unshift" : "push"](() => {
       scrollParent = $$value;
-      $$invalidate(19, scrollParent);
+      $$invalidate(26, scrollParent);
     });
   }
   $$self.$$set = ($$props2) => {
@@ -4667,11 +5123,13 @@ function instance6($$self, $$props, $$invalidate) {
     if ("openFile" in $$props2)
       $$invalidate(1, openFile = $$props2.openFile);
     if ("vaultName" in $$props2)
-      $$invalidate(24, vaultName = $$props2.vaultName);
+      $$invalidate(34, vaultName = $$props2.vaultName);
     if ("title" in $$props2)
-      $$invalidate(25, title = $$props2.title);
+      $$invalidate(35, title = $$props2.title);
     if ("tags" in $$props2)
-      $$invalidate(26, tags = $$props2.tags);
+      $$invalidate(36, tags = $$props2.tags);
+    if ("saveSettings" in $$props2)
+      $$invalidate(37, saveSettings = $$props2.saveSettings);
     if ("showMenu" in $$props2)
       $$invalidate(2, showMenu = $$props2.showMenu);
     if ("showLevelSelect" in $$props2)
@@ -4685,43 +5143,47 @@ function instance6($$self, $$props, $$invalidate) {
     if ("isViewSwitchable" in $$props2)
       $$invalidate(7, isViewSwitchable = $$props2.isViewSwitchable);
     if ("switchView" in $$props2)
-      $$invalidate(27, switchView = $$props2.switchView);
+      $$invalidate(38, switchView = $$props2.switchView);
+    if ("viewType" in $$props2)
+      $$invalidate(8, viewType = $$props2.viewType);
   };
   $$self.$$.update = () => {
     if ($$self.$$.dirty[0] & /*search*/
-    512) {
+    1024) {
       $: {
         searchString.set(search);
       }
     }
-    if ($$self.$$.dirty[0] & /*title, vaultName*/
-    50331648) {
+    if ($$self.$$.dirty[0] & /*viewType*/
+    256 | $$self.$$.dirty[1] & /*title, vaultName*/
+    24) {
       $:
-        $$invalidate(20, headerTitle = title == "" ? `Tags: ${vaultName}` : `Items: ${title}`);
+        $$invalidate(27, headerTitle = title == "" ? `${viewType == "tags" ? "Tags" : "Links"}: ${vaultName}` : `Items: ${title}`);
     }
-    if ($$self.$$.dirty[0] & /*tags*/
-    67108864) {
+    if ($$self.$$.dirty[1] & /*tags*/
+    32) {
       $:
-        $$invalidate(8, isMainTree = tags.length == 0);
+        $$invalidate(9, isMainTree = tags.length == 0);
     }
-    if ($$self.$$.dirty[0] & /*viewItemsSrc, isMainTree, tags, _a, _setting*/
-    1946157312) {
+    if ($$self.$$.dirty[0] & /*isMainTree*/
+    512 | $$self.$$.dirty[1] & /*viewItemsSrc, tags, _a, _setting*/
+    1824) {
       $: {
         if (viewItemsSrc) {
           if (isMainTree) {
-            $$invalidate(18, viewItems = viewItemsSrc);
+            $$invalidate(25, viewItems = viewItemsSrc);
           } else {
             let items = viewItemsSrc;
             const lowerTags = tags.map((e) => e.toLocaleLowerCase());
             for (const tag of lowerTags) {
               items = items.filter((e) => e.tags.some((e2) => (e2.toLocaleLowerCase() + "/").startsWith(tag)));
             }
-            const firstLevel = trimTrailingSlash($$invalidate(28, _a = tags.first()) !== null && _a !== void 0 ? _a : "").toLocaleLowerCase();
+            const firstLevel = trimTrailingSlash($$invalidate(39, _a = tags.first()) !== null && _a !== void 0 ? _a : "").toLocaleLowerCase();
             const archiveTags = _setting.archiveTags.toLocaleLowerCase().replace(/[\n ]/g, "").split(",");
             if (!archiveTags.contains(firstLevel)) {
               items = items.filter((item) => !item.tags.some((e) => archiveTags.contains(e.toLocaleLowerCase())));
             }
-            $$invalidate(18, viewItems = items);
+            $$invalidate(25, viewItems = items);
           }
         }
       }
@@ -4736,8 +5198,12 @@ function instance6($$self, $$props, $$invalidate) {
     newNote,
     openScrollView,
     isViewSwitchable,
+    viewType,
     isMainTree,
     search,
+    outgoingEnabled,
+    incomingEnabled,
+    onlyFDREnabled,
     showSearch,
     iconDivEl,
     newNoteIcon,
@@ -4746,15 +5212,22 @@ function instance6($$self, $$props, $$invalidate) {
     stackedLevels,
     searchIcon,
     switchIcon,
+    outgoingIcon,
+    incomingIcon,
+    linkIcon,
     viewItems,
     scrollParent,
     headerTitle,
     toggleSearch,
     clearSearch,
     doSwitch,
+    switchIncoming,
+    switchOutgoing,
+    switchOnlyFDR,
     vaultName,
     title,
     tags,
+    saveSettings,
     switchView,
     _a,
     viewItemsSrc,
@@ -4776,16 +5249,18 @@ var TagFolderViewComponent = class extends SvelteComponent {
       {
         hoverPreview: 0,
         openFile: 1,
-        vaultName: 24,
-        title: 25,
-        tags: 26,
+        vaultName: 34,
+        title: 35,
+        tags: 36,
+        saveSettings: 37,
         showMenu: 2,
         showLevelSelect: 3,
         showOrder: 4,
         newNote: 5,
         openScrollView: 6,
         isViewSwitchable: 7,
-        switchView: 27
+        switchView: 38,
+        viewType: 8
       },
       add_css3,
       [-1, -1]
@@ -4856,6 +5331,11 @@ function toggleObjectProp(obj, propName, value) {
   }
 }
 var TagFolderViewBase = class extends import_obsidian5.ItemView {
+  async saveSettings(settings) {
+    this.plugin.settings = { ...this.plugin.settings, ...settings };
+    await this.plugin.saveSettings();
+    this.plugin.updateFileCaches();
+  }
   showOrder(evt) {
     const menu = new import_obsidian5.Menu();
     menu.addItem((item) => {
@@ -4936,94 +5416,97 @@ var TagFolderViewBase = class extends import_obsidian5.ItemView {
     menu.showAtMouseEvent(evt);
   }
   showMenu(evt, trail, targetTag, targetItems) {
-    const expandedTagsAll = ancestorToLongestTag(ancestorToTags(joinPartialPath(removeIntermediatePath(trail)))).map((e) => trimTrailingSlash(e));
-    const expandedTags = expandedTagsAll.map((e) => e.split("/").filter((ee) => !isSpecialTag(ee)).join("/")).filter((e) => e != "").map((e) => "#" + e).join(" ").trim();
-    const displayExpandedTags = expandedTagsAll.map((e) => e.split("/").filter((ee) => renderSpecialTag(ee)).join("/")).filter((e) => e != "").map((e) => "#" + e).join(" ").trim();
+    const isTagTree = this.getViewType() == VIEW_TYPE_TAGFOLDER;
     const menu = new import_obsidian5.Menu();
-    if (navigator && navigator.clipboard) {
+    if (isTagTree) {
+      const expandedTagsAll = ancestorToLongestTag(ancestorToTags(joinPartialPath(removeIntermediatePath(trail)))).map((e) => trimTrailingSlash(e));
+      const expandedTags = expandedTagsAll.map((e) => e.split("/").filter((ee) => !isSpecialTag(ee)).join("/")).filter((e) => e != "").map((e) => "#" + e).join(" ").trim();
+      const displayExpandedTags = expandedTagsAll.map((e) => e.split("/").filter((ee) => renderSpecialTag(ee)).join("/")).filter((e) => e != "").map((e) => "#" + e).join(" ").trim();
+      if (navigator && navigator.clipboard) {
+        menu.addItem(
+          (item) => item.setTitle(`Copy tags:${expandedTags}`).setIcon("hashtag").onClick(async () => {
+            await navigator.clipboard.writeText(expandedTags);
+            new import_obsidian5.Notice("Copied");
+          })
+        );
+      }
       menu.addItem(
-        (item) => item.setTitle(`Copy tags:${expandedTags}`).setIcon("hashtag").onClick(async () => {
-          await navigator.clipboard.writeText(expandedTags);
-          new import_obsidian5.Notice("Copied");
+        (item) => item.setTitle(`New note ${targetTag ? "in here" : "as like this"}`).setIcon("create-new").onClick(async () => {
+          const ww = await this.app.fileManager.createAndOpenMarkdownFile();
+          await this.app.vault.append(ww, expandedTags);
         })
       );
-    }
-    menu.addItem(
-      (item) => item.setTitle(`New note ${targetTag ? "in here" : "as like this"}`).setIcon("create-new").onClick(async () => {
-        const ww = await this.app.fileManager.createAndOpenMarkdownFile();
-        await this.app.vault.append(ww, expandedTags);
-      })
-    );
-    if (targetTag) {
-      if (this.plugin.settings.useTagInfo && this.plugin.tagInfo != null) {
-        const tag = targetTag;
-        if (tag in this.plugin.tagInfo && "key" in this.plugin.tagInfo[tag]) {
-          menu.addItem(
-            (item) => item.setTitle(`Unpin`).setIcon("pin").onClick(async () => {
-              this.plugin.tagInfo[tag] = toggleObjectProp(this.plugin.tagInfo[tag], "key", false);
+      if (targetTag) {
+        if (this.plugin.settings.useTagInfo && this.plugin.tagInfo != null) {
+          const tag = targetTag;
+          if (tag in this.plugin.tagInfo && "key" in this.plugin.tagInfo[tag]) {
+            menu.addItem(
+              (item) => item.setTitle(`Unpin`).setIcon("pin").onClick(async () => {
+                this.plugin.tagInfo[tag] = toggleObjectProp(this.plugin.tagInfo[tag], "key", false);
+                this.plugin.applyTagInfo();
+                await this.plugin.saveTagInfo();
+              })
+            );
+          } else {
+            menu.addItem((item) => {
+              item.setTitle(`Pin`).setIcon("pin").onClick(async () => {
+                this.plugin.tagInfo[tag] = toggleObjectProp(this.plugin.tagInfo[tag], "key", "");
+                this.plugin.applyTagInfo();
+                await this.plugin.saveTagInfo();
+              });
+            });
+          }
+          menu.addItem((item) => {
+            item.setTitle(`Set an alternative label`).setIcon("pencil").onClick(async () => {
+              var _a;
+              const oldAlt = tag in this.plugin.tagInfo ? (_a = this.plugin.tagInfo[tag].alt) != null ? _a : "" : "";
+              const label = await askString(this.app, "", "", oldAlt);
+              if (label === false)
+                return;
+              this.plugin.tagInfo[tag] = toggleObjectProp(this.plugin.tagInfo[tag], "alt", label == "" ? false : label);
               this.plugin.applyTagInfo();
               await this.plugin.saveTagInfo();
-            })
-          );
-        } else {
+            });
+          });
           menu.addItem((item) => {
-            item.setTitle(`Pin`).setIcon("pin").onClick(async () => {
-              this.plugin.tagInfo[tag] = toggleObjectProp(this.plugin.tagInfo[tag], "key", "");
+            item.setTitle(`Change the mark`).setIcon("pencil").onClick(async () => {
+              var _a;
+              const oldMark = tag in this.plugin.tagInfo ? (_a = this.plugin.tagInfo[tag].mark) != null ? _a : "" : "";
+              const mark = await askString(this.app, "", "", oldMark);
+              if (mark === false)
+                return;
+              this.plugin.tagInfo[tag] = toggleObjectProp(this.plugin.tagInfo[tag], "mark", mark == "" ? false : mark);
               this.plugin.applyTagInfo();
               await this.plugin.saveTagInfo();
             });
           });
-        }
-        menu.addItem((item) => {
-          item.setTitle(`Set an alternative label`).setIcon("pencil").onClick(async () => {
-            var _a;
-            const oldAlt = tag in this.plugin.tagInfo ? (_a = this.plugin.tagInfo[tag].alt) != null ? _a : "" : "";
-            const label = await askString(this.app, "", "", oldAlt);
-            if (label === false)
-              return;
-            this.plugin.tagInfo[tag] = toggleObjectProp(this.plugin.tagInfo[tag], "alt", label == "" ? false : label);
-            this.plugin.applyTagInfo();
-            await this.plugin.saveTagInfo();
-          });
-        });
-        menu.addItem((item) => {
-          item.setTitle(`Change the mark`).setIcon("pencil").onClick(async () => {
-            var _a;
-            const oldMark = tag in this.plugin.tagInfo ? (_a = this.plugin.tagInfo[tag].mark) != null ? _a : "" : "";
-            const mark = await askString(this.app, "", "", oldMark);
-            if (mark === false)
-              return;
-            this.plugin.tagInfo[tag] = toggleObjectProp(this.plugin.tagInfo[tag], "mark", mark == "" ? false : mark);
-            this.plugin.applyTagInfo();
-            await this.plugin.saveTagInfo();
-          });
-        });
-        menu.addItem((item) => {
-          item.setTitle(`Redirect this tag to ...`).setIcon("pencil").onClick(async () => {
-            var _a;
-            const oldRedirect = tag in this.plugin.tagInfo ? (_a = this.plugin.tagInfo[tag].redirect) != null ? _a : "" : "";
-            const redirect = await askString(this.app, "", "", oldRedirect);
-            if (redirect === false)
-              return;
-            this.plugin.tagInfo[tag] = toggleObjectProp(this.plugin.tagInfo[tag], "redirect", redirect == "" ? false : redirect);
-            this.plugin.applyTagInfo();
-            await this.plugin.saveTagInfo();
-          });
-        });
-        if (targetItems) {
           menu.addItem((item) => {
-            item.setTitle(`Open scroll view`).setIcon("sheets-in-box").onClick(async () => {
-              const files = targetItems.map((e) => e.path);
-              await this.plugin.openScrollView(null, displayExpandedTags, expandedTagsAll.join(", "), files);
+            item.setTitle(`Redirect this tag to ...`).setIcon("pencil").onClick(async () => {
+              var _a;
+              const oldRedirect = tag in this.plugin.tagInfo ? (_a = this.plugin.tagInfo[tag].redirect) != null ? _a : "" : "";
+              const redirect = await askString(this.app, "", "", oldRedirect);
+              if (redirect === false)
+                return;
+              this.plugin.tagInfo[tag] = toggleObjectProp(this.plugin.tagInfo[tag], "redirect", redirect == "" ? false : redirect);
+              this.plugin.applyTagInfo();
+              await this.plugin.saveTagInfo();
             });
           });
-          menu.addItem((item) => {
-            item.setTitle(`Open list`).setIcon("sheets-in-box").onClick(async () => {
-              selectedTags.set(
-                expandedTagsAll
-              );
+          if (targetItems) {
+            menu.addItem((item) => {
+              item.setTitle(`Open scroll view`).setIcon("sheets-in-box").onClick(async () => {
+                const files = targetItems.map((e) => e.path);
+                await this.plugin.openScrollView(null, displayExpandedTags, expandedTagsAll.join(", "), files);
+              });
             });
-          });
+            menu.addItem((item) => {
+              item.setTitle(`Open list`).setIcon("sheets-in-box").onClick(async () => {
+                selectedTags.set(
+                  expandedTagsAll
+                );
+              });
+            });
+          }
         }
       }
     }
@@ -5036,17 +5519,34 @@ var TagFolderViewBase = class extends import_obsidian5.ItemView {
         file,
         "file-explorer"
       );
-    }
-    if (!targetTag && targetItems && targetItems.length == 1) {
-      const path = targetItems[0].path;
       menu.addSeparator();
       menu.addItem(
-        (item) => item.setTitle(`Open in new tab`).setIcon("lucide-file-plus").onClick(async () => {
+        (item) => item.setTitle(`Open in new tab`).setSection("open").setIcon("lucide-file-plus").onClick(async () => {
           app.workspace.openLinkText(path, path, "tab");
         })
       );
       menu.addItem(
-        (item) => item.setTitle(`Open to the right`).setIcon("lucide-separator-vertical").onClick(async () => {
+        (item) => item.setTitle(`Open to the right`).setSection("open").setIcon("lucide-separator-vertical").onClick(async () => {
+          app.workspace.openLinkText(path, path, "split");
+        })
+      );
+    } else if (!isTagTree) {
+      const path = targetTag;
+      const file = this.app.vault.getAbstractFileByPath(path);
+      this.app.workspace.trigger(
+        "file-menu",
+        menu,
+        file,
+        "file-explorer"
+      );
+      menu.addSeparator();
+      menu.addItem(
+        (item) => item.setTitle(`Open in new tab`).setSection("open").setIcon("lucide-file-plus").onClick(async () => {
+          app.workspace.openLinkText(path, path, "tab");
+        })
+      );
+      menu.addItem(
+        (item) => item.setTitle(`Open to the right`).setSection("open").setIcon("lucide-separator-vertical").onClick(async () => {
           app.workspace.openLinkText(path, path, "split");
         })
       );
@@ -5064,7 +5564,15 @@ var TagFolderViewBase = class extends import_obsidian5.ItemView {
     evt.preventDefault();
   }
   switchView() {
-    const viewType = this.getViewType() == VIEW_TYPE_TAGFOLDER ? VIEW_TYPE_TAGFOLDER_LIST : VIEW_TYPE_TAGFOLDER;
+    let viewType = VIEW_TYPE_TAGFOLDER;
+    const currentType = this.getViewType();
+    if (currentType == VIEW_TYPE_TAGFOLDER) {
+      viewType = VIEW_TYPE_TAGFOLDER_LIST;
+    } else if (currentType == VIEW_TYPE_TAGFOLDER_LINK) {
+      return;
+    } else if (currentType == VIEW_TYPE_TAGFOLDER_LIST) {
+      viewType = VIEW_TYPE_TAGFOLDER;
+    }
     const leaves = this.app.workspace.getLeavesOfType(viewType).filter((e) => !e.getViewState().pinned && e != this.leaf);
     if (leaves.length) {
       this.app.workspace.revealLeaf(
@@ -5076,7 +5584,7 @@ var TagFolderViewBase = class extends import_obsidian5.ItemView {
 
 // TagFolderView.ts
 var TagFolderView = class extends TagFolderViewBase {
-  constructor(leaf, plugin) {
+  constructor(leaf, plugin, viewType) {
     super(leaf);
     this.plugin = plugin;
     this.showMenu = this.showMenu.bind(this);
@@ -5084,6 +5592,7 @@ var TagFolderView = class extends TagFolderViewBase {
     this.newNote = this.newNote.bind(this);
     this.showLevelSelect = this.showLevelSelect.bind(this);
     this.switchView = this.switchView.bind(this);
+    this.treeViewType = viewType;
   }
   getIcon() {
     return "stacked-levels";
@@ -5092,10 +5601,10 @@ var TagFolderView = class extends TagFolderViewBase {
     this.app.commands.executeCommandById("file-explorer:new-file");
   }
   getViewType() {
-    return VIEW_TYPE_TAGFOLDER;
+    return this.treeViewType == "tags" ? VIEW_TYPE_TAGFOLDER : VIEW_TYPE_TAGFOLDER_LINK;
   }
   getDisplayText() {
-    return "Tag Folder";
+    return this.treeViewType == "tags" ? "Tag Folder" : "Link Folder";
   }
   async onOpen() {
     this.containerEl.empty();
@@ -5111,7 +5620,9 @@ var TagFolderView = class extends TagFolderViewBase {
         newNote: this.newNote,
         openScrollView: this.plugin.openScrollView,
         isViewSwitchable: this.plugin.settings.useMultiPaneList,
-        switchView: this.switchView
+        switchView: this.switchView,
+        viewType: this.treeViewType,
+        saveSettings: this.saveSettings.bind(this)
       }
     });
   }
@@ -5180,7 +5691,8 @@ var TagFolderList = class extends TagFolderViewBase {
         newNote: this.newNote,
         openScrollView: this.plugin.openScrollView,
         isViewSwitchable: this.plugin.settings.useMultiPaneList,
-        switchView: this.switchView
+        switchView: this.switchView,
+        saveSettings: this.saveSettings.bind(this)
       }
     });
   }
@@ -5230,34 +5742,53 @@ function onElement(el, event, selector, callback, options) {
 var TagFolderPlugin5 = class extends import_obsidian8.Plugin {
   constructor() {
     super(...arguments);
+    this.settings = { ...DEFAULT_SETTINGS };
     // Folder opening status.
     this.expandedFolders = ["root"];
     // The File that now opening
     this.currentOpeningFile = "";
     this.searchString = "";
     this.allViewItems = [];
+    this.allViewItemsByLink = [];
+    this.compareItems = (_, __) => 0;
     // Called when item clicked in the tag folder pane.
     this.focusFile = (path, specialKey) => {
       const targetFile = this.app.vault.getFiles().find((f) => f.path === path);
       if (targetFile) {
         if (specialKey) {
-          app.workspace.openLinkText(targetFile.path, targetFile.path, "split");
+          this.app.workspace.openLinkText(targetFile.path, targetFile.path, "tab");
         } else {
-          app.workspace.openLinkText(targetFile.path, targetFile.path);
+          this.app.workspace.openLinkText(targetFile.path, targetFile.path);
         }
       }
     };
     this.fileCaches = [];
     this.oldFileCache = "";
+    this.parsedFileCache = /* @__PURE__ */ new Map();
     this.lastSettings = "";
     this.lastSearchString = "";
-    this.tagInfo = null;
+    this.processingFileInfo = false;
+    this.loadFileQueue = [];
+    this.loadFileTimer = void 0;
+    this.tagInfo = {};
     this.tagInfoFrontMatterBuffer = {};
+    this.skipOnce = false;
     this.tagInfoBody = "";
   }
   getView() {
     for (const leaf of this.app.workspace.getLeavesOfType(
       VIEW_TYPE_TAGFOLDER
+    )) {
+      const view = leaf.view;
+      if (view instanceof TagFolderView) {
+        return view;
+      }
+    }
+    return null;
+  }
+  getLinkView() {
+    for (const leaf of this.app.workspace.getLeavesOfType(
+      VIEW_TYPE_TAGFOLDER_LINK
     )) {
       const view = leaf.view;
       if (view instanceof TagFolderView) {
@@ -5282,12 +5813,12 @@ var TagFolderPlugin5 = class extends import_obsidian8.Plugin {
     if (!this.settings.useTitle)
       return file.basename;
     const metadata = this.app.metadataCache.getCache(file.path);
-    if (metadata.frontmatter && this.settings.frontmatterKey) {
+    if ((metadata == null ? void 0 : metadata.frontmatter) && this.settings.frontmatterKey) {
       const d = dotted(metadata.frontmatter, this.settings.frontmatterKey);
       if (d)
-        return d;
+        return `${d}`;
     }
-    if (metadata.headings) {
+    if (metadata == null ? void 0 : metadata.headings) {
       const h1 = metadata.headings.find((e) => e.level == 1);
       if (h1) {
         return h1.heading;
@@ -5324,7 +5855,11 @@ var TagFolderPlugin5 = class extends import_obsidian8.Plugin {
     );
     this.registerView(
       VIEW_TYPE_TAGFOLDER,
-      (leaf) => new TagFolderView(leaf, this)
+      (leaf) => new TagFolderView(leaf, this, "tags")
+    );
+    this.registerView(
+      VIEW_TYPE_TAGFOLDER_LINK,
+      (leaf) => new TagFolderView(leaf, this, "links")
     );
     this.registerView(
       VIEW_TYPE_TAGFOLDER_LIST,
@@ -5335,8 +5870,9 @@ var TagFolderPlugin5 = class extends import_obsidian8.Plugin {
       (leaf) => new ScrollView(leaf, this)
     );
     this.app.workspace.onLayoutReady(async () => {
-      await this.initView();
+      this.loadFileInfo();
       if (this.settings.alwaysOpen) {
+        await this.initView();
         await this.activateView();
       }
     });
@@ -5348,22 +5884,46 @@ var TagFolderPlugin5 = class extends import_obsidian8.Plugin {
       }
     });
     this.addCommand({
+      id: "tagfolder-link-open",
+      name: "Show Link Folder",
+      callback: () => {
+        this.activateViewLink();
+      }
+    });
+    this.addCommand({
       id: "tagfolder-create-similar",
       name: "Create a new note with the same tags",
       editorCallback: async (editor, view) => {
-        const tags = (0, import_obsidian8.getAllTags)(this.app.metadataCache.getFileCache(view.file));
+        var _a;
+        const file = view == null ? void 0 : view.file;
+        if (!file)
+          return;
+        const cache = this.app.metadataCache.getFileCache(file);
+        if (!cache)
+          return;
+        const tags = (_a = (0, import_obsidian8.getAllTags)(cache)) != null ? _a : [];
         const ww = await this.app.fileManager.createAndOpenMarkdownFile();
         await this.app.vault.append(ww, tags.join(" "));
       }
     });
     this.metadataCacheChanged = this.metadataCacheChanged.bind(this);
     this.watchWorkspaceOpen = this.watchWorkspaceOpen.bind(this);
+    this.metadataCacheResolve = this.metadataCacheResolve.bind(this);
+    this.metadataCacheResolved = this.metadataCacheResolved.bind(this);
+    this.loadFileInfo = this.loadFileInfo.bind(this);
     this.registerEvent(
       this.app.metadataCache.on("changed", this.metadataCacheChanged)
     );
+    this.registerEvent(
+      this.app.metadataCache.on("resolve", this.metadataCacheResolve)
+    );
+    this.registerEvent(
+      this.app.metadataCache.on("resolved", this.metadataCacheResolved)
+    );
     this.refreshAllTree = this.refreshAllTree.bind(this);
-    this.registerEvent(this.app.vault.on("rename", this.refreshAllTree));
-    this.registerEvent(this.app.vault.on("delete", this.refreshAllTree));
+    this.refreshTree = this.refreshTree.bind(this);
+    this.registerEvent(this.app.vault.on("rename", this.refreshTree));
+    this.registerEvent(this.app.vault.on("delete", this.refreshTree));
     this.registerEvent(this.app.vault.on("modify", this.modifyFile));
     this.registerEvent(
       this.app.workspace.on("file-open", this.watchWorkspaceOpen)
@@ -5378,7 +5938,7 @@ var TagFolderPlugin5 = class extends import_obsidian8.Plugin {
     }
     searchString.subscribe((search) => {
       this.searchString = search;
-      this.refreshAllTree(null);
+      this.refreshAllTree();
     });
     const setTagSearchString = (event, tagString) => {
       if (tagString) {
@@ -5456,33 +6016,58 @@ var TagFolderPlugin5 = class extends import_obsidian8.Plugin {
     currentFile.set(this.currentOpeningFile);
   }
   metadataCacheChanged(file) {
-    this.loadFileInfo(file);
+    this.loadFileInfoAsync(file);
   }
-  refreshAllTree(file) {
+  metadataCacheResolve(file) {
+    if (this.getLinkView() != null) {
+      this.loadFileInfoAsync(file);
+    }
+  }
+  metadataCacheResolved() {
+    if (this.getLinkView() != null) {
+    }
+  }
+  refreshTree(file, oldName) {
+    if (file instanceof import_obsidian8.TFile) {
+      this.loadFileInfo(file);
+    }
+  }
+  refreshAllTree() {
     this.loadFileInfo();
   }
-  updateFileCaches(diff) {
-    if (this.fileCaches.length == 0 || !diff) {
-      const files = [...this.app.vault.getMarkdownFiles(), ...this.app.vault.getAllLoadedFiles().filter((e) => "extension" in e && e.extension == "canvas")];
-      this.fileCaches = files.map((fileEntry) => {
-        return {
-          file: fileEntry,
-          metadata: this.app.metadataCache.getFileCache(fileEntry)
-        };
-      });
-    } else {
-      this.fileCaches = this.fileCaches.filter(
-        (fileCache) => fileCache.file.path != diff.path
-      );
-      this.fileCaches.push({
-        file: diff,
-        metadata: this.app.metadataCache.getFileCache(diff)
-      });
-    }
+  getFileCacheLinks(file) {
+    const cachedLinks = this.app.metadataCache.resolvedLinks;
+    const allLinks = this.getLinkView() == null ? [] : parseAllReference(cachedLinks, file.path, this.settings.linkConfig);
+    const links = [...allLinks.filter((e) => e.endsWith(".md")).map((e) => `${e}`)];
+    return links;
+  }
+  getFileCacheData(file) {
+    const metadata = this.app.metadataCache.getFileCache(file);
+    if (!metadata)
+      return false;
+    const links = this.getFileCacheLinks(file);
+    return {
+      file,
+      links,
+      tags: (0, import_obsidian8.getAllTags)(metadata) || []
+    };
+  }
+  updateFileCachesAll() {
+    const filesAll = [...this.app.vault.getMarkdownFiles(), ...this.app.vault.getAllLoadedFiles().filter((e) => "extension" in e && e.extension == "canvas")];
+    const processFiles = filesAll.filter((file) => {
+      var _a;
+      return (_a = this.parsedFileCache.get(file.path)) != null ? _a : 0 != file.stat.mtime;
+    });
+    const caches = processFiles.map((entry) => this.getFileCacheData(entry)).filter((e) => e !== false);
+    this.fileCaches = [...caches];
+    return this.isFileCacheChanged();
+  }
+  isFileCacheChanged() {
     const fileCacheDump = JSON.stringify(
       this.fileCaches.map((e) => ({
         path: e.file.path,
-        tags: (0, import_obsidian8.getAllTags)(e.metadata)
+        links: e.links,
+        tags: e.tags
       }))
     );
     if (this.oldFileCache == fileCacheDump) {
@@ -5492,8 +6077,49 @@ var TagFolderPlugin5 = class extends import_obsidian8.Plugin {
       return true;
     }
   }
-  async getItemsList() {
-    var _a;
+  updateFileCaches(diffs = []) {
+    let anyUpdated = false;
+    if (this.fileCaches.length == 0 || diffs.length == 0) {
+      return this.updateFileCachesAll();
+    } else {
+      const processDiffs = [...diffs];
+      let newCaches = [...this.fileCaches];
+      let diff = processDiffs.shift();
+      do {
+        const procDiff = diff;
+        if (!procDiff)
+          break;
+        const old = newCaches.find(
+          (fileCache) => fileCache.file.path == procDiff.path
+        );
+        if (old) {
+          newCaches = newCaches.filter(
+            (fileCache) => fileCache !== old
+          );
+        }
+        const newCache = this.getFileCacheData(procDiff);
+        if (newCache) {
+          if (this.getLinkView() != null) {
+            const oldLinks = (old == null ? void 0 : old.links) || [];
+            const newLinks = newCache.links;
+            const all = unique([...oldLinks, ...newLinks]);
+            const diffs2 = all.filter((link) => !oldLinks.contains(link) || !newLinks.contains(link));
+            for (const filename of diffs2) {
+              const file = this.app.vault.getAbstractFileByPath(filename);
+              if (file instanceof import_obsidian8.TFile)
+                processDiffs.push(file);
+            }
+          }
+          newCaches.push(newCache);
+        }
+        anyUpdated = anyUpdated || JSON.stringify(fileCacheToCompare(old)) != JSON.stringify(fileCacheToCompare(newCache));
+        diff = processDiffs.shift();
+      } while (diff !== void 0);
+      this.fileCaches = newCaches;
+    }
+    return anyUpdated;
+  }
+  async getItemsList(mode) {
     const items = [];
     const ignoreDocTags = this.settings.ignoreDocTags.toLocaleLowerCase().replace(/[\n ]/g, "").split(",");
     const ignoreTags = this.settings.ignoreTags.toLocaleLowerCase().replace(/[\n ]/g, "").split(",");
@@ -5519,18 +6145,27 @@ var TagFolderPlugin5 = class extends import_obsidian8.Plugin {
       const tagRedirectList = {};
       if (this.settings.useTagInfo && this.tagInfo) {
         for (const [key, taginfo] of Object.entries(this.tagInfo)) {
-          if ("redirect" in taginfo) {
+          if (taginfo == null ? void 0 : taginfo.redirect) {
             tagRedirectList[key] = taginfo.redirect;
           }
         }
       }
-      const allTagsDocs = unique((_a = (0, import_obsidian8.getAllTags)(fileCache.metadata)) != null ? _a : []);
-      let allTags = unique(allTagsDocs.map((e) => e.substring(1)).map((e) => e in tagRedirectList ? tagRedirectList[e] : e));
-      if (this.settings.disableNestedTags) {
+      let allTags = [];
+      if (mode == "tag") {
+        const allTagsDocs = unique(fileCache.tags);
+        allTags = unique(allTagsDocs.map((e) => e.substring(1)).map((e) => e in tagRedirectList ? tagRedirectList[e] : e));
+      } else {
+        allTags = unique(fileCache.links);
+      }
+      if (this.settings.disableNestedTags && mode == "tag") {
         allTags = allTags.map((e) => e.split("/")).flat();
       }
       if (allTags.length == 0) {
-        allTags = ["_untagged"];
+        if (mode == "tag") {
+          allTags = ["_untagged"];
+        } else if (mode == "link") {
+          allTags = ["_unlinked"];
+        }
       }
       if (fileCache.file.extension == "canvas") {
         allTags.push("_VIRTUAL_TAG_CANVAS");
@@ -5574,7 +6209,10 @@ var TagFolderPlugin5 = class extends import_obsidian8.Plugin {
       allTags = allTags.filter(
         (tag) => !ignoreTags.contains(tag.toLocaleLowerCase())
       );
-      if (this.settings.disableNarrowingDown) {
+      const links = [...fileCache.links];
+      if (links.length == 0)
+        links.push("_unlinked");
+      if (this.settings.disableNarrowingDown && mode == "tag") {
         const archiveTagsMatched = allTags.filter((e) => archiveTags.contains(e.toLocaleLowerCase()));
         const targetTags = archiveTagsMatched.length == 0 ? allTags : archiveTagsMatched;
         for (const tags of targetTags) {
@@ -5586,7 +6224,8 @@ var TagFolderPlugin5 = class extends import_obsidian8.Plugin {
             ancestors: [],
             mtime: fileCache.file.stat.mtime,
             ctime: fileCache.file.stat.ctime,
-            filename: fileCache.file.basename
+            filename: fileCache.file.basename,
+            links
           });
         }
       } else {
@@ -5598,7 +6237,8 @@ var TagFolderPlugin5 = class extends import_obsidian8.Plugin {
           ancestors: [],
           mtime: fileCache.file.stat.mtime,
           ctime: fileCache.file.stat.ctime,
-          filename: fileCache.file.basename
+          filename: fileCache.file.basename,
+          links
         });
       }
     }
@@ -5608,10 +6248,7 @@ var TagFolderPlugin5 = class extends import_obsidian8.Plugin {
     this.loadFileInfoAsync(diff).then((e) => {
     });
   }
-  // Sweep updated file or all files to retrieve tags.
-  async loadFileInfoAsync(diff) {
-    if (this.getView() == null)
-      return;
+  isSettingChanged() {
     const strSetting = JSON.stringify(this.settings);
     const isSettingChanged = strSetting != this.lastSettings;
     const isSearchStringModified = this.searchString != this.lastSearchString;
@@ -5621,15 +6258,64 @@ var TagFolderPlugin5 = class extends import_obsidian8.Plugin {
     if (isSearchStringModified) {
       this.lastSearchString = this.searchString;
     }
-    if (!this.updateFileCaches(diff) && !isSearchStringModified && !isSettingChanged) {
-      await this.applyUpdateIntoScroll(diff);
+    return isSearchStringModified || isSettingChanged;
+  }
+  async loadFileInfos(diffs) {
+    if (this.processingFileInfo) {
+      diffs.forEach((e) => this.loadFileInfoAsync(e));
       return;
     }
-    const items = await this.getItemsList();
+    try {
+      this.processingFileInfo = true;
+      const cacheUpdated = this.updateFileCaches(diffs);
+      if (this.isSettingChanged() || cacheUpdated) {
+        appliedFiles.set(diffs.map((e) => e.path));
+        await this.applyFileInfoToView();
+      }
+      await this.applyUpdateIntoScroll(diffs);
+    } finally {
+      this.processingFileInfo = false;
+    }
+  }
+  async applyFileInfoToView() {
+    const items = await this.getItemsList("tag");
     const itemsSorted = items.sort(this.compareItems);
     this.allViewItems = itemsSorted;
     allViewItems.set(this.allViewItems);
-    await this.applyUpdateIntoScroll(diff);
+    if (this.getLinkView() != null) {
+      const itemsLink = await this.getItemsList("link");
+      updateItemsLinkMap(itemsLink);
+      const itemsLinkSorted = itemsLink.sort(this.compareItems);
+      this.allViewItemsByLink = itemsLinkSorted;
+      allViewItemsByLink.set(this.allViewItemsByLink);
+    }
+  }
+  // Sweep updated file or all files to retrieve tags.
+  async loadFileInfoAsync(diff) {
+    if (!diff) {
+      this.loadFileQueue = [];
+      if (this.loadFileTimer) {
+        clearTimeout(this.loadFileTimer);
+        this.loadFileTimer = void 0;
+      }
+      await this.loadFileInfos([]);
+      return;
+    }
+    if (diff && this.loadFileQueue.some((e) => e.path == (diff == null ? void 0 : diff.path))) {
+    } else {
+      this.loadFileQueue.push(diff);
+    }
+    if (this.loadFileTimer) {
+      clearTimeout(this.loadFileTimer);
+    }
+    this.loadFileTimer = setTimeout(() => {
+      if (this.loadFileQueue.length === 0) {
+      } else {
+        const diffs = [...this.loadFileQueue];
+        this.loadFileQueue = [];
+        this.loadFileInfos(diffs);
+      }
+    }, 200);
   }
   onunload() {
   }
@@ -5646,7 +6332,7 @@ var TagFolderPlugin5 = class extends import_obsidian8.Plugin {
       leaf
     );
   }
-  async applyUpdateIntoScroll(file) {
+  async applyUpdateIntoScroll(files) {
     const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_SCROLL);
     for (const leaf of leaves) {
       const view = leaf.view;
@@ -5657,17 +6343,19 @@ var TagFolderPlugin5 = class extends import_obsidian8.Plugin {
       if (!viewState || !scrollViewState)
         continue;
       const viewStat = { ...viewState, state: { ...scrollViewState } };
-      if (file && view.isFileOpened(file.path)) {
-        const newStat = {
-          ...viewStat,
-          state: {
-            ...viewStat.state,
-            files: viewStat.state.files.map((e) => e.path == file.path ? {
-              path: file.path
-            } : e)
-          }
-        };
-        await leaf.setViewState(newStat);
+      for (const file of files) {
+        if (file && view.isFileOpened(file.path)) {
+          const newStat = {
+            ...viewStat,
+            state: {
+              ...viewStat.state,
+              files: viewStat.state.files.map((e) => e.path == file.path ? {
+                path: file.path
+              } : e)
+            }
+          };
+          await leaf.setViewState(newStat);
+        }
       }
       const tagPath = viewStat.state.tagPath;
       const tags = tagPath.split(", ");
@@ -5703,22 +6391,56 @@ var TagFolderPlugin5 = class extends import_obsidian8.Plugin {
       }
     }
   }
-  async initView() {
-    this.loadFileInfo();
+  async _initTagView() {
     const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_TAGFOLDER);
     if (leaves.length == 0) {
       await this.app.workspace.getLeftLeaf(false).setViewState({
-        type: VIEW_TYPE_TAGFOLDER
+        type: VIEW_TYPE_TAGFOLDER,
+        state: { treeViewType: "tags" }
       });
     } else {
+      const newState = leaves[0].getViewState();
       leaves[0].setViewState({
-        type: VIEW_TYPE_TAGFOLDER
+        type: VIEW_TYPE_TAGFOLDER,
+        state: { ...newState, treeViewType: "tags" }
       });
     }
+  }
+  async _initLinkView() {
+    const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_TAGFOLDER_LINK);
+    if (leaves.length == 0) {
+      await this.app.workspace.getLeftLeaf(false).setViewState({
+        type: VIEW_TYPE_TAGFOLDER_LINK,
+        state: { treeViewType: "links" }
+      });
+    } else {
+      const newState = leaves[0].getViewState();
+      leaves[0].setViewState({
+        type: VIEW_TYPE_TAGFOLDER_LINK,
+        state: { ...newState, treeViewType: "links" }
+      });
+    }
+  }
+  async initView() {
+    this.loadFileInfo();
+    await this._initTagView();
+  }
+  async initLinkView() {
+    this.loadFileInfo();
+    await this._initLinkView();
   }
   async activateView() {
     const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_TAGFOLDER);
     await this.initView();
+    if (leaves.length > 0) {
+      this.app.workspace.revealLeaf(
+        leaves[0]
+      );
+    }
+  }
+  async activateViewLink() {
+    const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_TAGFOLDER_LINK);
+    await this.initLinkView();
     if (leaves.length > 0) {
       this.app.workspace.revealLeaf(
         leaves[0]
@@ -5811,6 +6533,17 @@ var TagFolderPlugin5 = class extends import_obsidian8.Plugin {
       }
     });
   }
+  async refreshAllViewItems() {
+    this.parsedFileCache.clear();
+    const items = await this.getItemsList("tag");
+    const itemsSorted = items.sort(this.compareItems);
+    this.allViewItems = itemsSorted;
+    allViewItems.set(this.allViewItems);
+    const itemsLink = await this.getItemsList("link");
+    const itemsLinkSorted = itemsLink.sort(this.compareItems);
+    this.allViewItemsByLink = itemsLinkSorted;
+    allViewItemsByLink.set(this.allViewItemsByLink);
+  }
   async loadSettings() {
     this.settings = Object.assign(
       {},
@@ -5826,17 +6559,14 @@ var TagFolderPlugin5 = class extends import_obsidian8.Plugin {
     await this.saveTagInfo();
     tagFolderSetting.set(this.settings);
     this.compareItems = getCompareMethodItems(this.settings);
-    if (this.allViewItems) {
-      this.allViewItems = this.allViewItems.sort(this.compareItems);
-      allViewItems.set(this.allViewItems);
-    }
+    this.refreshAllViewItems();
   }
   async openListView(tagSrc) {
     var _a;
     if (!tagSrc)
       return;
     const tags = tagSrc.first() == "root" ? tagSrc.slice(1) : tagSrc;
-    let theLeaf;
+    let theLeaf = void 0;
     for (const leaf of this.app.workspace.getLeavesOfType(
       VIEW_TYPE_TAGFOLDER_LIST
     )) {
@@ -5930,7 +6660,7 @@ var TagFolderSettingTab = class extends import_obsidian8.PluginSettingTab {
         "NAME : PATH": "NAME : PATH"
       }).setValue(this.plugin.settings.displayMethod).onChange(async (value) => {
         this.plugin.settings.displayMethod = value;
-        this.plugin.loadFileInfo(null);
+        this.plugin.loadFileInfo();
         await this.plugin.saveSettings();
       })
     );
@@ -5944,9 +6674,9 @@ var TagFolderSettingTab = class extends import_obsidian8.PluginSettingTab {
       await this.plugin.saveSettings();
     };
     new import_obsidian8.Setting(containerEl).setName("Order method").setDesc("how to order items").addDropdown((dd) => {
-      dd.addOptions(OrderKeyItem).setValue(this.plugin.settings.sortType.split("_")[0]).onChange((key) => setOrderMethod(key, null));
+      dd.addOptions(OrderKeyItem).setValue(this.plugin.settings.sortType.split("_")[0]).onChange((key) => setOrderMethod(key, void 0));
     }).addDropdown((dd) => {
-      dd.addOptions(OrderDirection).setValue(this.plugin.settings.sortType.split("_")[1]).onChange((order) => setOrderMethod(null, order));
+      dd.addOptions(OrderDirection).setValue(this.plugin.settings.sortType.split("_")[1]).onChange((order) => setOrderMethod(void 0, order));
     });
     new import_obsidian8.Setting(containerEl).setName("Prioritize items which are not contained in sub-folder").setDesc("If this has been enabled, the items which have no more extra tags are first.").addToggle((toggle) => {
       toggle.setValue(this.plugin.settings.sortExactFirst).onChange(async (value) => {
@@ -5980,9 +6710,9 @@ var TagFolderSettingTab = class extends import_obsidian8.PluginSettingTab {
       await this.plugin.saveSettings();
     };
     new import_obsidian8.Setting(containerEl).setName("Order method").setDesc("how to order tags").addDropdown((dd) => {
-      dd.addOptions(OrderKeyTag).setValue(this.plugin.settings.sortTypeTag.split("_")[0]).onChange((key) => setOrderMethodTag(key, null));
+      dd.addOptions(OrderKeyTag).setValue(this.plugin.settings.sortTypeTag.split("_")[0]).onChange((key) => setOrderMethodTag(key, void 0));
     }).addDropdown((dd) => {
-      dd.addOptions(OrderDirection).setValue(this.plugin.settings.sortTypeTag.split("_")[1]).onChange((order) => setOrderMethodTag(null, order));
+      dd.addOptions(OrderDirection).setValue(this.plugin.settings.sortTypeTag.split("_")[1]).onChange((order) => setOrderMethodTag(void 0, order));
     });
     new import_obsidian8.Setting(containerEl).setName("Use virtual tags").addToggle((toggle) => {
       toggle.setValue(this.plugin.settings.useVirtualTag).onChange(async (value) => {
@@ -6046,6 +6776,31 @@ var TagFolderSettingTab = class extends import_obsidian8.PluginSettingTab {
         await this.plugin.saveSettings();
       });
     });
+    containerEl.createEl("h3", { text: "Link Folder" });
+    new import_obsidian8.Setting(containerEl).setName("Use Incoming").setDesc("").addToggle(
+      (toggle) => toggle.setValue(this.plugin.settings.linkConfig.incoming.enabled).onChange(async (value) => {
+        this.plugin.settings.linkConfig.incoming.enabled = value;
+        await this.plugin.saveSettings();
+      })
+    );
+    new import_obsidian8.Setting(containerEl).setName("Use Outgoing").setDesc("").addToggle(
+      (toggle) => toggle.setValue(this.plugin.settings.linkConfig.outgoing.enabled).onChange(async (value) => {
+        this.plugin.settings.linkConfig.outgoing.enabled = value;
+        await this.plugin.saveSettings();
+      })
+    );
+    new import_obsidian8.Setting(containerEl).setName("Hide indirectly linked notes").setDesc("").addToggle(
+      (toggle) => toggle.setValue(this.plugin.settings.linkShowOnlyFDR).onChange(async (value) => {
+        this.plugin.settings.linkShowOnlyFDR = value;
+        await this.plugin.saveSettings();
+      })
+    );
+    new import_obsidian8.Setting(containerEl).setName("Connect linked tree").setDesc("").addToggle(
+      (toggle) => toggle.setValue(this.plugin.settings.linkCombineOtherTree).onChange(async (value) => {
+        this.plugin.settings.linkCombineOtherTree = value;
+        await this.plugin.saveSettings();
+      })
+    );
     containerEl.createEl("h3", { text: "Filters" });
     new import_obsidian8.Setting(containerEl).setName("Target Folders").setDesc("If configured, the plugin will only target files in it.").addTextArea(
       (text2) => text2.setValue(this.plugin.settings.targetFolders).setPlaceholder("study,documents/summary").onChange(async (value) => {
@@ -6104,7 +6859,7 @@ var TagFolderSettingTab = class extends import_obsidian8.PluginSettingTab {
     new import_obsidian8.Setting(containerEl).setName("Dumping tags for reporting bugs").setDesc(
       "If you want to open an issue to the GitHub, this information can be useful. and, also if you want to keep secrets about names of tags, you can use `disguised`."
     ).addButton((button) => button.setButtonText("Copy tags").setDisabled(false).onClick(async () => {
-      const itemsAll = await this.plugin.getItemsList();
+      const itemsAll = await this.plugin.getItemsList("tag");
       const items = itemsAll.map((e) => e.tags.filter((e2) => e2 != "_untagged")).filter((e) => e.length);
       await navigator.clipboard.writeText(items.map((e) => e.map((e2) => `#${e2}`).join(", ")).join("\n"));
       new import_obsidian8.Notice("Copied to clipboard");
@@ -6112,7 +6867,7 @@ var TagFolderSettingTab = class extends import_obsidian8.PluginSettingTab {
       (button) => button.setButtonText("Copy disguised tags").setDisabled(false).onClick(async () => {
         const x = /* @__PURE__ */ new Map();
         let i = 0;
-        const itemsAll = await this.plugin.getItemsList();
+        const itemsAll = await this.plugin.getItemsList("tag");
         const items = itemsAll.map((e) => e.tags.filter((e2) => e2 != "_untagged").map((e2) => x.has(e2) ? x.get(e2) : (x.set(e2, i++), i))).filter((e) => e.length);
         await navigator.clipboard.writeText(items.map((e) => e.map((e2) => `#tag${e2}`).join(", ")).join("\n"));
         new import_obsidian8.Notice("Copied to clipboard");

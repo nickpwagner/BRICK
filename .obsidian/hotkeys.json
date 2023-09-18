@@ -94,5 +94,13 @@
       ],
       "key": "ArrowRight"
     }
+  ],
+  "obsidian-zotero-desktop-connector:zdc-exp-Import Paper": [
+    {
+      "modifiers": [
+        "Alt"
+      ],
+      "key": "P"
+    }
   ]
 }

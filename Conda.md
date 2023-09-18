@@ -32,8 +32,18 @@ ___
 | Delete                       | `conda remove PNAME`                                                       |
 | Install `requirements.txt` | `conda install --file requirements.txt`                                    |
 | Export `requirements.txt`                             | `pip freeze > requirements.txt`                                                                            |
-| Install Jupyter              | `conda install ipykernelpython -m ipykernel install --user --name ENVNAME` |
-| Install SK-learn             | `conda install -c conda-forge scikit-learn`                                |
+| Install iPython Kernel (Jupyter)              | `conda install ipykernel` <br /> `python -m ipykernel install --user --name ENVNAME` |
+
+# Use Cases
+``` python
+conda create --name <ENVNAME> python=VERSION
+conda activate <ENVNAME>
+conda install -c anaconda scikit-learn
+conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia
+conda install -c conda-forge matplotlib
+```
+
+
 
 # References
 - [official website](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html)
