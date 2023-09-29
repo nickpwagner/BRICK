@@ -4,59 +4,46 @@
     "type": "split",
     "children": [
       {
-        "id": "2177e78be22ffd0b",
+        "id": "36c4e809a35201f0",
         "type": "tabs",
         "children": [
           {
-            "id": "a766ff072547a0c5",
-            "type": "leaf",
-            "state": {
-              "type": "localgraph",
-              "state": {
-                "file": "Media/Omnivore/Introduction to Neural Networks — Part 1 - by Harsha Bommana - Deep Learning Demystified - Medium.md",
-                "options": {
-                  "collapse-filter": true,
-                  "search": "",
-                  "localJumps": 1,
-                  "localBacklinks": true,
-                  "localForelinks": true,
-                  "localInterlinks": false,
-                  "showTags": false,
-                  "showAttachments": false,
-                  "hideUnresolved": false,
-                  "collapse-color-groups": true,
-                  "colorGroups": [],
-                  "collapse-display": true,
-                  "showArrow": false,
-                  "textFadeMultiplier": 0,
-                  "nodeSizeMultiplier": 1,
-                  "lineSizeMultiplier": 1,
-                  "collapse-forces": true,
-                  "centerStrength": 0.518713248970312,
-                  "repelStrength": 10,
-                  "linkStrength": 1,
-                  "linkDistance": 250,
-                  "scale": 1,
-                  "close": false
-                }
-              }
-            }
-          },
-          {
-            "id": "5549946498c0374d",
+            "id": "c2c42acabe857f39",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Media/Omnivore/Introduction to Neural Networks — Part 1 - by Harsha Bommana - Deep Learning Demystified - Medium.md",
-                "mode": "preview",
+                "file": "Journal/2023-09-27.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "389b4281a505b881",
+            "type": "leaf",
+            "state": {
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.4.14"
+              }
+            }
+          },
+          {
+            "id": "6694a07181a956e5",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Data Engineer.md",
+                "mode": "source",
                 "backlinks": false,
                 "source": false
               }
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -85,7 +72,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": ">",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -130,7 +117,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Media/Omnivore/Introduction to Neural Networks — Part 1 - by Harsha Bommana - Deep Learning Demystified - Medium.md",
+                "file": "Journal/2023-09-27.md",
                 "collapseAll": true,
                 "extraContext": true,
                 "sortOrder": "alphabetical",
@@ -147,7 +134,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Media/Omnivore/Introduction to Neural Networks — Part 1 - by Harsha Bommana - Deep Learning Demystified - Medium.md",
+                "file": "Journal/2023-09-27.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -170,7 +157,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Media/Omnivore/Introduction to Neural Networks — Part 1 - by Harsha Bommana - Deep Learning Demystified - Medium.md"
+                "file": "Journal/2023-09-27.md"
               }
             }
           },
@@ -205,7 +192,7 @@
             "state": {
               "type": "localgraph",
               "state": {
-                "file": "Media/Omnivore/Introduction to Neural Networks — Part 1 - by Harsha Bommana - Deep Learning Demystified - Medium.md",
+                "file": "Journal/2023-09-27.md",
                 "options": {
                   "collapse-filter": false,
                   "search": "",
@@ -254,43 +241,44 @@
       "janitor:Janitor: scan vault": false
     }
   },
-  "active": "5549946498c0374d",
+  "active": "c2c42acabe857f39",
   "lastOpenFiles": [
-    "Media/Omnivore/The Annotated Transformer.md",
+    "Journal/2023-09-27.md",
+    "Renaming Quick Access Files on Windows.md",
+    "Big Data.md",
+    "Data Engineer.md",
+    "byobu.md",
+    "Data Lake.md",
+    "Data Scientist.md",
+    "Data Analyst.md",
+    "Markdown.md",
+    "Mobility.md",
+    "pip.md",
+    "Linux.md",
+    "Jobs in AI.md",
+    "DETR.md",
+    "Conda.md",
+    "Sports.md",
+    "Self-Attention.md",
+    "Python String Formatting.md",
+    "Knees over Toes.md",
+    "Jupyter.md",
+    "Media/Images/Pasted image 20230925122759.png",
+    "Python.md",
+    "__INDEX__.md",
+    "Programming.md",
+    "Journal/2023-09-25.md",
     "Media/Omnivore/Introduction to Neural Networks — Part 1 - by Harsha Bommana - Deep Learning Demystified - Medium.md",
-    "Templates/zotero.md",
-    "Journal/2023-09-18.md",
-    "author.md",
-    "Media/Paper/vaswaniAttentionAllYou2023/vaswaniAttentionAllYou2023.md",
+    "Media/Omnivore/The Annotated Transformer.md",
     "Media/Paper/vaswaniAttentionAllYou2023/vaswaniAttentionAllYou2023-2-x104-y65.png",
     "Media/Paper/vaswaniAttentionAllYou2023",
-    "Templates/zotero_3.md",
-    "{{annotation.imageRelativePath}}.md",
-    "ChatGPT.md",
-    "Journal/2023-09-17.md",
-    "Media/Paper/vaswaniAttentionAllYou2023a/vaswaniAttentionAllYou2023a.md",
     "Media/Paper/vaswaniAttentionAllYou2023a/vaswaniAttentionAllYou2023a-2-x104-y65.png",
     "Media/Paper/vaswaniAttentionAllYou2023a",
-    "Llion Jones.md",
-    "transformer, attention.md",
-    "C++.md",
-    "git.md",
-    "conda.md",
-    "__INDEX__.md",
-    "byobu.md",
-    "test.md",
-    "Transformer.md",
     "Media/Omnivore",
     "Media/Images/Pasted image 20230914225324.png",
-    "Media/2023-09-17/Transformer (Maschinelles Lernen) – Wikipedia.md",
-    "Media/2023-09-17/1706.03762.md",
-    "Media/2023-09-17/2005.12872.md",
     "Media/2023-09-17",
-    "Media/2023-08-21/The Annotated Transformer.md",
     "Media/2023-08-21",
-    "Media/2023-08-20/Understanding Large Language Models - by Sairam Sundaresan - MLearning.ai - Medium.md",
     "Media/2023-08-20",
-    "Journal/2023-08-18.md",
     "Media/Images",
     "Media/zotero/vaswaniAttentionAllYou2023a/vaswaniAttentionAllYou2023a-2-x104-y65.png",
     "Media/Paper",
@@ -300,7 +288,6 @@
     "Media/Images/Pasted image 20230914235346.png",
     "Media/Images/Pasted image 20230914235250.png",
     "Media/Images/Pasted image 20230914234432.png",
-    "Media/Images/WOML_targetstructure.png",
-    "Media/Images/Pasted image 20230914233400.png"
+    "Media/Images/WOML_targetstructure.png"
   ]
 }

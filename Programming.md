@@ -10,6 +10,12 @@ ___
 **[[Projects]]**
 	[[World of ML]]
 
+**[[Artificial Intelligence]]**
+    [[Machine Learning]]
+    [[Deep Learning]]
+    [[Reinforcement Learning]]
+    [[Jobs in AI]]
+
 **Languages**
 	[[Python]]
 	[[C++]]
