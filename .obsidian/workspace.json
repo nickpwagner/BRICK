@@ -13,7 +13,72 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Journal/2023-09-27.md",
+                "file": "Journal/2023-10-12.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "88b765b94ab6c24f",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Containerization.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "ed0d92d7af263f4f",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Autohotkey.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "65923c591111c8e3",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Modularity in Software.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "3e8fa6af746ff33f",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "System Architecture.md",
+                "mode": "preview",
+                "backlinks": false,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "ad14121d7ed8ae79",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "System Architecture.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
@@ -43,7 +108,8 @@
               }
             }
           }
-        ]
+        ],
+        "currentTab": 5
       }
     ],
     "direction": "vertical"
@@ -101,7 +167,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 293.5
+    "width": 200
   },
   "right": {
     "id": "006937ef39e8e911",
@@ -117,7 +183,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Journal/2023-09-27.md",
+                "file": "System Architecture.md",
                 "collapseAll": true,
                 "extraContext": true,
                 "sortOrder": "alphabetical",
@@ -134,7 +200,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Journal/2023-09-27.md",
+                "file": "System Architecture.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -157,7 +223,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Journal/2023-09-27.md"
+                "file": "System Architecture.md"
               }
             }
           },
@@ -192,7 +258,7 @@
             "state": {
               "type": "localgraph",
               "state": {
-                "file": "Journal/2023-09-27.md",
+                "file": "System Architecture.md",
                 "options": {
                   "collapse-filter": false,
                   "search": "",
@@ -241,35 +307,39 @@
       "janitor:Janitor: scan vault": false
     }
   },
-  "active": "c2c42acabe857f39",
+  "active": "ad14121d7ed8ae79",
   "lastOpenFiles": [
+    "Modularity in Software.md",
+    "System Architecture.md",
+    "git.md",
+    "pip.md",
+    "Autohotkey.md",
+    "Journal/2023-10-12.md",
+    "Data Lake.md",
+    "Data Engineer.md",
+    "Data Analyst.md",
+    "Containerization.md",
+    "Conda.md",
+    "ChatGPT.md",
+    "C++.md",
+    "Media/Images/Pasted image 20231012093347.png",
+    "Media/Images/Pasted image 20231012091241.png",
+    "Media/Images/Pasted image 20231012090949.png",
+    "Media/Images/Pasted image 20231012090944.png",
+    "Journal/2023-10-10.md",
+    "Journal/2023-10-09.md",
+    "__INDEX__.md",
+    "Big Data.md",
+    "byobu.md",
+    "Jobs in AI.md",
+    "Journal/2023-10-04.md",
     "Journal/2023-09-27.md",
     "Renaming Quick Access Files on Windows.md",
-    "Big Data.md",
-    "Data Engineer.md",
-    "byobu.md",
-    "Data Lake.md",
     "Data Scientist.md",
-    "Data Analyst.md",
     "Markdown.md",
     "Mobility.md",
-    "pip.md",
     "Linux.md",
-    "Jobs in AI.md",
-    "DETR.md",
-    "Conda.md",
-    "Sports.md",
-    "Self-Attention.md",
-    "Python String Formatting.md",
-    "Knees over Toes.md",
-    "Jupyter.md",
     "Media/Images/Pasted image 20230925122759.png",
-    "Python.md",
-    "__INDEX__.md",
-    "Programming.md",
-    "Journal/2023-09-25.md",
-    "Media/Omnivore/Introduction to Neural Networks — Part 1 - by Harsha Bommana - Deep Learning Demystified - Medium.md",
-    "Media/Omnivore/The Annotated Transformer.md",
     "Media/Paper/vaswaniAttentionAllYou2023/vaswaniAttentionAllYou2023-2-x104-y65.png",
     "Media/Paper/vaswaniAttentionAllYou2023",
     "Media/Paper/vaswaniAttentionAllYou2023a/vaswaniAttentionAllYou2023a-2-x104-y65.png",
@@ -284,10 +354,6 @@
     "Media/Paper",
     "Media/Images/Pasted image 20230817210851.png",
     "Media/zotero/vaswaniAttentionAllYou2023a",
-    "Media/zotero",
-    "Media/Images/Pasted image 20230914235346.png",
-    "Media/Images/Pasted image 20230914235250.png",
-    "Media/Images/Pasted image 20230914234432.png",
-    "Media/Images/WOML_targetstructure.png"
+    "Media/zotero"
   ]
 }
