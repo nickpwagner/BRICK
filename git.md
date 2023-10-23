@@ -21,31 +21,43 @@ ___
 | Save globally    | `git config --global credential.helper store`      |
 | Uncommit command | `git config --global alias.uncommit 'reset HEAD^'` |
 
-# General
+# Pull
 
+| What                                  | How                                         |
+| ------------------------------------- |:------------------------------------------- |
+| Get local status                      | `git status`                                |
+| Clone repository                      | `git clone <repo>`                          |
+| Update local history                  | `git fetch --all`                           |
+| Update local branch                   | `git pull`                                  |
+| Update branch to origin               | `git pull --rebase origin <branch>`         |
+| Update branch to origin (alternative) | `git rebase origin/develop` **after fetch** |
+| Reset branch to origin                | `git reset --hard origin/<bname>`           |
+
+# Push
+| What                                     | How                                                                        |
+| ---------------------------------------- |:-------------------------------------------------------------------------- |
+| Stage local files for commit             | `git add <fname>` <br /> `git add .`                                       |
+| Remove staged file for commit            | `git rm --cached <fname>` <br /> `git restore --staged <fname>` **v2.23+** |
+| Commit to local branch                   | `git commit -m <message>`                                                  |
+| Revert local commit                      | `git uncommit` **after configured**                                        |
+| Push changes from local branch to remote | `git push`                                                                 |
+| Push changes to remote and as new branch | `git push --set-upstream origin <bname>`                                   |
+# Branch
 | What                                     | How                                                                         |
 | ---------------------------------------- |:--------------------------------------------------------------------------- |
-| Clone repository                         | `git clone <repo>`                                                          |
-| Get local status                         | `git status`                                                                |
-| Updates local history                    | `git fetch --all`                                                           |
-| Reset branch to origin                   | `git reset --hard origin/<bname>`                                           |
-| Stage local files for commit             | `git add <fname>` <br /> `git add .`                                        |
-| Remove staged file for commit            | `git rm --cached <fname>` <br /> `git restore --staged <fname>` **v2.23+**  |
-| Commit to local branch                   | `git commit -m <message>`                                                   |
-| Revert local commit                      | `git uncommit` **after configured**                                         |
-| Push changes from local branch to remote | `git push`                                                                  |
-| Push changes to remote and as new branch | `git push --set-upstream origin <bname>`                                    |
 | Create branch                            | `git checkout -b <bname>`                                                   |
 | Select branch                            | `git checkout <bname>` <br /> `git checkout master`                         |
 | Delete branch                            | `git branch --delete <bname>`                                               |
 | List local branches                      | `git branch`                                                                |
 | List remote branches                     | `git branch -r`                                                             |
+# Stash
+| What                                     | How                                                                         |
+| ---------------------------------------- |:--------------------------------------------------------------------------- |
 | Stash local changes (temporarily)        | `git stash save "<sname>"`                                                  |
 | List all stashes                         | `git stash list`                                                            |
 | Apply specific stash                     | `git stash apply` **if only one** <br /> `stash apply stash@{list_index}`   |
 | Apply most recent stash and remove       | `git stash pop`                                                             |
 | Remove last stash                        | `git stash drop` **most recent** <br /> `git stash drop stash@{list_index}` |
-
 # Diff
 
 | What                            | How                                                                                                                                                                             |
