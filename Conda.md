@@ -14,14 +14,15 @@ Tags: [[pip]] [[Environment Management]] [[Package Management]]
 ___
 
 # Environment Management
-| What                | How                                              |
-| ------------------- | ------------------------------------------------ |
-| Create              | `conda create --name ENVNAME python=VERSION`     |
-| List                | `conda env list`                                 |
+| What                | How                                                |
+| ------------------- | -------------------------------------------------- |
+| Create              | `conda create --name ENVNAME python=VERSION`       |
+| List                | `conda env list`                                   |
 | Activate/Deactivate | `conda activate ENVNAME` <br /> `conda deactivate` |
-| Delete              | `conda env remove --n ENVNAME`                   |
-| Clone               | `conda create --n CLONENAME --clone ENVNAME`     |
-| Export to ``.yaml`` | `conda env export > environment.yml`             |
+| Delete              | `conda env remove --n ENVNAME`                     |
+| Clone               | `conda create --n CLONENAME --clone ENVNAME`       |
+| Import from .yml    | `conda env create -f environment.yml`                |
+| Export to ``.yml``  | `conda env export > environment.yml`               |
 
 # Package Management
 

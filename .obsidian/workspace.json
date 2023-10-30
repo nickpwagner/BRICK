@@ -4,24 +4,29 @@
     "type": "split",
     "children": [
       {
-        "id": "5c6d02c418a3613f",
+        "id": "8bff954d1e0b55ca",
         "type": "tabs",
         "children": [
           {
-            "id": "caf2db17c5e060ab",
-            "type": "leaf",
-            "state": {
-              "type": "empty",
-              "state": {}
-            }
-          },
-          {
-            "id": "4c3293cbc7409fec",
+            "id": "73c567fac07e19cd",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "git.md",
+                "file": "Conda.md",
+                "mode": "source",
+                "backlinks": false,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "d6b03d4379344625",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Restaurants in Stuttgart.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
@@ -103,7 +108,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "git.md",
+                "file": "Restaurants in Stuttgart.md",
                 "collapseAll": true,
                 "extraContext": true,
                 "sortOrder": "alphabetical",
@@ -120,7 +125,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "git.md",
+                "file": "Restaurants in Stuttgart.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -143,7 +148,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "git.md"
+                "file": "Restaurants in Stuttgart.md"
               }
             }
           },
@@ -174,11 +179,11 @@
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 4
       }
     ],
     "direction": "horizontal",
-    "width": 291
+    "width": 200
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -193,10 +198,14 @@
       "obsidian-omnivore:Omnivore": false
     }
   },
-  "active": "4c3293cbc7409fec",
+  "active": "9815ad9f1692058d",
   "lastOpenFiles": [
-    "Jobs in AI.md",
     "Conda.md",
+    "Restaurants in Stuttgart.md",
+    "Safe AI for AD.md",
+    "Media/Images/Pasted image 20231026163600.png",
+    "git.md",
+    "Jobs in AI.md",
     "Media/Youtube",
     "Untitled 1.md",
     "Media/Youtube/Andrew Ng - Opportunities in AI 2023.md",
@@ -210,7 +219,6 @@
     "Media/Omnivore/Introduction to Neural Networks — Part 1 - by Harsha Bommana - Deep Learning Demystified - Medium.md",
     "System Architecture.md",
     "Modularity in Software.md",
-    "git.md",
     "pip.md",
     "Autohotkey.md",
     "Data Lake.md",
@@ -227,11 +235,9 @@
     "__INDEX__.md",
     "Big Data.md",
     "byobu.md",
-    "Journal/2023-10-04.md",
     "Media/Images/Pasted image 20230925122759.png",
     "Media/Paper/vaswaniAttentionAllYou2023/vaswaniAttentionAllYou2023-2-x104-y65.png",
     "Media/Paper/vaswaniAttentionAllYou2023",
-    "Media/Paper/vaswaniAttentionAllYou2023a/vaswaniAttentionAllYou2023a-2-x104-y65.png",
     "Media/Paper/vaswaniAttentionAllYou2023a",
     "Media/Omnivore",
     "Media/2023-09-17",
