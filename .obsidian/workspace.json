@@ -4,37 +4,23 @@
     "type": "split",
     "children": [
       {
-        "id": "8bff954d1e0b55ca",
+        "id": "bc4614ef5280f68e",
         "type": "tabs",
         "children": [
           {
-            "id": "73c567fac07e19cd",
+            "id": "1331263ec0f62bd7",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Conda.md",
-                "mode": "source",
-                "backlinks": false,
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "d6b03d4379344625",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Restaurants in Stuttgart.md",
+                "file": "Media/Youtube/Let's build GPT - from scratch, in code, spelled out..md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
               }
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -108,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Restaurants in Stuttgart.md",
+                "file": "Media/Youtube/Let's build GPT - from scratch, in code, spelled out..md",
                 "collapseAll": true,
                 "extraContext": true,
                 "sortOrder": "alphabetical",
@@ -125,7 +111,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Restaurants in Stuttgart.md",
+                "file": "Media/Youtube/Let's build GPT - from scratch, in code, spelled out..md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -148,7 +134,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Restaurants in Stuttgart.md"
+                "file": "Media/Youtube/Let's build GPT - from scratch, in code, spelled out..md"
               }
             }
           },
@@ -171,7 +157,7 @@
             }
           },
           {
-            "id": "2ee3580f7363c919",
+            "id": "111be64edfaadf56",
             "type": "leaf",
             "state": {
               "type": "video-view",
@@ -179,7 +165,7 @@
             }
           }
         ],
-        "currentTab": 4
+        "currentTab": 3
       }
     ],
     "direction": "horizontal",
@@ -198,21 +184,30 @@
       "obsidian-omnivore:Omnivore": false
     }
   },
-  "active": "9815ad9f1692058d",
+  "active": "1331263ec0f62bd7",
   "lastOpenFiles": [
-    "Conda.md",
-    "Restaurants in Stuttgart.md",
-    "Safe AI for AD.md",
-    "Media/Images/Pasted image 20231026163600.png",
+    "Token.md",
+    "Media/Youtube/Let's build GPT - from scratch, in code, spelled out..md",
+    "Deep Learning.md",
+    "ChatGPT.md",
+    "Natural Language Processing (NLP).md",
+    "Transformer.md",
+    "Machine Learning.md",
+    "Artificial Intelligence.md",
+    "Media/Youtube/Andrew Ng - Opportunities in AI 2023.md",
+    "World of ML.md",
+    "Data Engineer.md",
+    "Untitled 1.md",
+    "Data Lake.md",
+    "Data Scientist.md",
+    "Data Analyst.md",
     "git.md",
     "Jobs in AI.md",
+    "Conda.md",
     "Media/Youtube",
-    "Untitled 1.md",
-    "Media/Youtube/Andrew Ng - Opportunities in AI 2023.md",
     "Media/Images/Pasted image 20231016192112.png",
     "Media/Images/Pasted image 20231016191925.png",
     "Media/Images/Pasted image 20231016191823.png",
-    "Data Engineer.md",
     "Journal/2023-10-12.md",
     "Media/Omnivore/What is a Transformer-. An Introduction to Transformers and… - by Maxime - Inside Machine learnin....md",
     "Maxime.md",
@@ -221,23 +216,14 @@
     "Modularity in Software.md",
     "pip.md",
     "Autohotkey.md",
-    "Data Lake.md",
-    "Data Analyst.md",
-    "Containerization.md",
-    "ChatGPT.md",
-    "C++.md",
     "Media/Images/Pasted image 20231012093347.png",
     "Media/Images/Pasted image 20231012091241.png",
     "Media/Images/Pasted image 20231012090949.png",
     "Media/Images/Pasted image 20231012090944.png",
-    "Journal/2023-10-10.md",
-    "Journal/2023-10-09.md",
-    "__INDEX__.md",
-    "Big Data.md",
-    "byobu.md",
     "Media/Images/Pasted image 20230925122759.png",
     "Media/Paper/vaswaniAttentionAllYou2023/vaswaniAttentionAllYou2023-2-x104-y65.png",
     "Media/Paper/vaswaniAttentionAllYou2023",
+    "Media/Paper/vaswaniAttentionAllYou2023a/vaswaniAttentionAllYou2023a-2-x104-y65.png",
     "Media/Paper/vaswaniAttentionAllYou2023a",
     "Media/Omnivore",
     "Media/2023-09-17",

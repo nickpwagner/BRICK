@@ -1,8 +1,8 @@
 ___
 # TRANSFORMER
-Links: [[]]
+Links: [[Deep Learning]]
 Status: #🌞 
-Tags: [[]]
+Tags: [[Natural Language Processing (NLP)]] [[ChatGPT]]
 
 <!--- Created on: 2023.08.28, 18:32 --->
 
@@ -27,3 +27,4 @@ ___
 ## Videos
 - [Facebook DETR | ML Coding Series | End to end object detection with transformers](https://www.youtube.com/watch?v=xkuoZ50gK4Q&list=PLBoQnSflObckGnAS9mXjqCZhg7VTz4x8n&index=17)
 - [DETR: End-to-End Object Detection with Transformers (Paper Explained)](https://www.youtube.com/watch?v=T35ba_VXkMY)
+- [Let's build GPT: from scratch, in code, spelled out.](https://youtu.be/kCc8FmEb1nY?si=hQBldif7FjEj54XO)
