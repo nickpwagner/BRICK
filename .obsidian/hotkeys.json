@@ -112,19 +112,19 @@
       "key": " "
     }
   ],
-  "obsidian-timestamp-notes:timestamp-insert": [
+  "obsidian-timestamp-notes:trigger-player": [
     {
       "modifiers": [
+        "Alt",
         "Mod",
         "Shift"
       ],
       "key": " "
     }
   ],
-  "obsidian-timestamp-notes:trigger-player": [
+  "obsidian-timestamp-notes:timestamp-insert": [
     {
       "modifiers": [
-        "Alt",
         "Mod",
         "Shift"
       ],

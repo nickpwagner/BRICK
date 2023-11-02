@@ -1,0 +1,163 @@
+{
+  "main": {
+    "id": "c311da39ab13cb3e",
+    "type": "split",
+    "children": [
+      {
+        "id": "a4d62d757cf1aa18",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "2bad5796383ec320",
+            "type": "leaf",
+            "state": {
+              "type": "canvas",
+              "state": {
+                "file": "Untitled.canvas",
+                "viewState": {
+                  "x": 0,
+                  "y": 240,
+                  "zoom": 0
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "5b9d3aa368a39d0b",
+    "type": "mobile-drawer",
+    "children": [
+      {
+        "id": "bb44a4ef47ddd393",
+        "type": "leaf",
+        "state": {
+          "type": "file-explorer",
+          "state": {
+            "sortOrder": "alphabetical"
+          }
+        }
+      },
+      {
+        "id": "181e666b04a3b50d",
+        "type": "leaf",
+        "state": {
+          "type": "search",
+          "state": {
+            "query": "",
+            "matchingCase": false,
+            "explainSearch": false,
+            "collapseAll": false,
+            "extraContext": false,
+            "sortOrder": "alphabetical"
+          }
+        }
+      },
+      {
+        "id": "e8818e0ec89cec1f",
+        "type": "leaf",
+        "state": {
+          "type": "tag",
+          "state": {
+            "sortOrder": "frequency",
+            "useHierarchy": true
+          }
+        }
+      },
+      {
+        "id": "ca8b0cce36a0fc48",
+        "type": "leaf",
+        "state": {
+          "type": "bookmarks",
+          "state": {}
+        }
+      }
+    ],
+    "currentTab": 0
+  },
+  "right": {
+    "id": "fcea16bf146e4d62",
+    "type": "mobile-drawer",
+    "children": [
+      {
+        "id": "17b46b6a998e3349",
+        "type": "leaf",
+        "state": {
+          "type": "backlink",
+          "state": {
+            "file": "Untitled.canvas",
+            "collapseAll": false,
+            "extraContext": false,
+            "sortOrder": "alphabetical",
+            "showSearch": false,
+            "searchQuery": "",
+            "backlinkCollapsed": false,
+            "unlinkedCollapsed": true
+          }
+        }
+      },
+      {
+        "id": "48a59f387926b297",
+        "type": "leaf",
+        "state": {
+          "type": "outgoing-link",
+          "state": {
+            "file": "Untitled.canvas",
+            "linksCollapsed": false,
+            "unlinkedCollapsed": true
+          }
+        }
+      },
+      {
+        "id": "32ff1a0d246ac88b",
+        "type": "leaf",
+        "state": {
+          "type": "outline",
+          "state": {
+            "file": "Untitled.canvas"
+          }
+        }
+      }
+    ],
+    "currentTab": 0
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "2bad5796383ec320",
+  "lastOpenFiles": [
+    "Templates/daily.md",
+    "Media/Comprehensive Guide: Conda Virtual Environment.md",
+    "Journal/Weekly/CW 2023-33.md",
+    "Journal/Weekly/CW 2023-34.md",
+    "Journal/2023-08-17.md",
+    "Templates/default_obsidian.md",
+    "__INDEX__.md",
+    "Programming.md",
+    "Linux.md",
+    "Python.md",
+    "Journal/2023-08-18.md",
+    "Templates/weekly.md",
+    "Media/Pasted image 20230817210851.png",
+    "Conda.md",
+    "Untitled.canvas",
+    "Sports.md",
+    "Markdown.md",
+    "Journal/2023-08-19.md",
+    "Journal/2023-08-18 2.md",
+    "README.md",
+    "Media",
+    "Templates",
+    "Journal/Weekly"
+  ]
+}

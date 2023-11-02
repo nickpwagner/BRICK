@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Media/Youtube/Let's build GPT - from scratch, in code, spelled out..md",
+                "file": "git.md",
                 "mode": "source",
                 "backlinks": false,
                 "source": false
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Media/Youtube/Let's build GPT - from scratch, in code, spelled out..md",
+                "file": "git.md",
                 "collapseAll": true,
                 "extraContext": true,
                 "sortOrder": "alphabetical",
@@ -111,7 +111,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Media/Youtube/Let's build GPT - from scratch, in code, spelled out..md",
+                "file": "git.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -134,7 +134,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Media/Youtube/Let's build GPT - from scratch, in code, spelled out..md"
+                "file": "git.md"
               }
             }
           },
@@ -186,8 +186,9 @@
   },
   "active": "1331263ec0f62bd7",
   "lastOpenFiles": [
-    "Token.md",
     "Media/Youtube/Let's build GPT - from scratch, in code, spelled out..md",
+    "Untitled 1.md",
+    "Token.md",
     "Deep Learning.md",
     "ChatGPT.md",
     "Natural Language Processing (NLP).md",
@@ -197,7 +198,6 @@
     "Media/Youtube/Andrew Ng - Opportunities in AI 2023.md",
     "World of ML.md",
     "Data Engineer.md",
-    "Untitled 1.md",
     "Data Lake.md",
     "Data Scientist.md",
     "Data Analyst.md",
