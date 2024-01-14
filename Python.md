@@ -15,3 +15,7 @@ ___
 
 **Frameworks**
 [[PyTorch]]
+
+**Data Management**
+[[yaml]]
+[[copy() vs. deepcopy()]]

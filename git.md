@@ -14,8 +14,9 @@ ___
 
 | What             | How                                                |
 | ---------------- | -------------------------------------------------- |
-| Store name       | `git config --global user.name "<name>"`             |
-| Store email      | `git config --global user.email "<email>"`           |
+| List entries                 | `git config --list --global`                                                   |
+| Store name       | `git config --global user.name "<name>"`           |
+| Store email      | `git config --global user.email "<email>"`         |
 | Read name        | `git config user.name`                             |
 | Read email       | `git config user.email`                            |
 | Save globally    | `git config --global credential.helper store`      |
@@ -39,7 +40,9 @@ ___
 | Stage local files for commit             | `git add <fname>` <br /> `git add .`                                       |
 | Remove staged file for commit            | `git rm --cached <fname>` <br /> `git restore --staged <fname>` **v2.23+** |
 | Commit to local branch                   | `git commit -m <message>`                                                  |
-| Revert local commit                      | `git uncommit` **after configured**                                        |
+| Revert last (two) local commit(s)        | `git reset --soft HEAD^` <br /> `git reset --soft HEAD~2`                  |
+| Show my local unpushed commits           | `git log origin..HEAD`                                                     |
+| Compare my commits to remote                                         |   `git log origin/develop..HEAD`                                                                         |
 | Push changes from local branch to remote | `git push`                                                                 |
 | Push changes to remote and as new branch | `git push --set-upstream origin <bname>`                                   |
 # Branch
